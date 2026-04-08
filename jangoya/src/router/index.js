@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Main from '@/pages/Main.vue';
-import Transction from '@/pages/Transction.vue';
+import Transction from '@/pages/transaction/Transction.vue';
 import AddTransction from '@/pages/AddTransction.vue';
 import SelectCategory from '@/pages/SelectCategory.vue';
 import EditTransction from '@/pages/EditTransction.vue';
