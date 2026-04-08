@@ -1,65 +1,9 @@
 {
-  "incomeCategory": [
-    {
-      "id": 1,
-      "name": "월급",
-      "color": "red",
-      "icon": "주소"
-    },
-    {
-      "id": 2,
-      "name": "보험비환급",
-      "color": "red",
-      "icon": "주소"
-    },
-    {
-      "id": 3,
-      "name": "부수입",
-      "color": "red",
-      "icon": "주소"
-    },
-    {
-      "id": 4,
-      "name": "부수입2",
-      "color": "red",
-      "icon": "주소"
-    }
-  ],
   "users": [
     {
       "id": "user01",
-      "name": "홍길동",
-      "nickname": "잔고야",
+      "name": "홍길동",    
       "password": "1234"
-    }
-  ],
-  "budgets": [
-    {
-      "id": "1",
-      "userId": "user01",
-      "date": "2026-04-07",
-      "type": "expense",
-      "categoryId": "category01",
-      "amount": 12000,
-      "memo": "점심 식사"
-    },
-    {
-      "id": "2",
-      "userId": "user01",
-      "date": "2026-04-11",
-      "type": "income",
-      "categoryId": "category02",
-      "amount": 12000,
-      "memo": "점심 식사"
-    },
-    {
-      "userId": "user01",
-      "date": "2026-04-11",
-      "type": "income",
-      "categoryId": "category02",
-      "amount": 12000,
-      "memo": "점심 식사",
-      "id": "Awk0H_p"
     }
   ]
 }
