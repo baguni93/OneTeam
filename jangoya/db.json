@@ -1,65 +1,88 @@
 {
-  "incomeCategory": [
-    {
-      "id": 1,
-      "name": "월급",
-      "color": "red",
-      "icon": "주소"
-    },
-    {
-      "id": 2,
-      "name": "보험비환급",
-      "color": "red",
-      "icon": "주소"
-    },
-    {
-      "id": 3,
-      "name": "부수입",
-      "color": "red",
-      "icon": "주소"
-    },
-    {
-      "id": 4,
-      "name": "부수입2",
-      "color": "red",
-      "icon": "주소"
-    }
-  ],
   "users": [
     {
-      "id": "user01",
+      "id": "1",
+      "userId": "1",
       "name": "홍길동",
-      "nickname": "잔고야",
       "password": "1234"
     }
   ],
   "budgets": [
     {
       "id": "1",
-      "userId": "user01",
+      "userId": "1",
       "date": "2026-04-07",
       "type": "expense",
-      "categoryId": "category01",
+      "categoryId": "4",
       "amount": 12000,
       "memo": "점심 식사"
     },
     {
       "id": "2",
-      "userId": "user01",
+      "userId": "1",
       "date": "2026-04-11",
       "type": "income",
-      "categoryId": "category02",
+      "categoryId": "1",
       "amount": 12000,
       "memo": "점심 식사"
+    }
+  ],
+
+  "categories": [
+    {
+      "id": "1",
+      "userId": "1",
+      "type": "income",
+      "name": "월급",
+      "color": "red",
+      "icon": "주소"
     },
     {
-      "userId": "user01",
-      "date": "2026-04-11",
+      "id": "2",
+      "userId": "1",
       "type": "income",
-      "categoryId": "category02",
-      "amount": 12000,
-      "memo": "점심 식사",
-      "id": "Awk0H_p"
+      "name": "용돈",
+      "color": "blue",
+      "icon": "주소"
+    },
+    {
+      "id": "3",
+      "userId": "1",
+      "type": "income",
+      "name": "기타",
+      "color": "green",
+      "icon": "주소"
+    },
+    {
+      "id": "4",
+      "userId": "1",
+      "type": "income",
+      "name": "식비",
+      "color": "orange",
+      "icon": "주소"
+    },
+    {
+      "id": "5",
+      "userId": "1",
+      "type": "income",
+      "name": "교통비",
+      "color": "yellow",
+      "icon": "주소"
+    }
+  ],
+
+  "budget_plans": [
+    {
+      "id": "1",
+      "userId": "1",
+      "month": "2026-04",
+      "total_budget": 1000000,
+      "category_budgets": [
+        {
+          "categoryId": "1",
+          "amount": 500000
+        }
+      ]
     }
   ]
 }

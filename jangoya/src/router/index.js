@@ -1,9 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Main from '@/pages/Main.vue';
+import Main from '@/pages/main/Main.vue';
 import Transction from '@/pages/transaction/Transction.vue';
-import AddTransction from '@/pages/AddTransction.vue';
-import SelectCategory from '@/pages/SelectCategory.vue';
-import EditTransction from '@/pages/EditTransction.vue';
+import AddTransction from '@/pages/transaction/AddTransction.vue';
+import SelectCategory from '@/pages/transaction/SelectCategory.vue';
+import EditTransction from '@/pages/transaction/EditTransction.vue';
+import Login from '@/pages/user/Login.vue';
+import Mypage from '@/pages/user/Mypage.vue';
+import FindAccount from '@/pages/user/FindAccount.vue';
+import Register from '@/pages/user/Register.vue';
+import Search from '@/pages/user/Search.vue';
+import CategoryFilter from '@/pages/categoryfilter/CategoryFilter.vue';
+import Category from '@/pages/category/Category.vue';
+import AddCategory from '@/pages/category/AddCategory.vue';
+import CategoryIcon from '@/pages/category/CategoryIcon.vue';
+import CategoryColor from '@/pages/category/CategoryColor.vue';
+import EditCategory from '@/pages/category/EditCategory.vue';
+import Budget from '@/pages/budget/Budget.vue';
+import DeleteBudget from '@/pages/budget/DeleteBudget.vue';
+import EditBudget from '@/pages/budget/EditBudget.vue';
+import NewBudget from '@/pages/budget/NewBudget.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -62,7 +77,7 @@ const router = createRouter({
     {
       path: '/categoryicon',
       name: 'categoryicon',
-      component: Categoryicon,
+      component: CategoryIcon,
     },
     {
       path: '/categorycolor',
