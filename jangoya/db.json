@@ -1,65 +1,54 @@
 {
   "incomeCategory": [
     {
-      "id": 1,
-      "name": "월급",
+      "id": "category02",
+      "name": "월급3",
       "color": "red",
+      "icon": "주소주소"
+    },
+    {
+      "id": "inc_2",
+      "name": "용돈",
+      "color": "blue",
       "icon": "주소"
     },
     {
-      "id": 2,
-      "name": "보험비환급",
-      "color": "red",
+      "id": "inc_3",
+      "name": "기타",
+      "color": "green",
       "icon": "주소"
     },
     {
-      "id": 3,
-      "name": "부수입",
-      "color": "red",
-      "icon": "주소"
-    },
-    {
-      "id": 4,
-      "name": "부수입2",
-      "color": "red",
+      "id": "category03",
+      "name": "월급2",
+      "color": "black",
       "icon": "주소"
     }
   ],
-  "users": [
+  "expenseCategory": [
     {
-      "id": "user01",
-      "name": "홍길동",
-      "nickname": "잔고야",
-      "password": "1234"
-    }
-  ],
-  "budgets": [
-    {
-      "id": "1",
-      "userId": "user01",
-      "date": "2026-04-07",
-      "type": "expense",
-      "categoryId": "category01",
-      "amount": 12000,
-      "memo": "점심 식사"
+      "id": "category01",
+      "name": "식비",
+      "color": "orange",
+      "icon": "주소"
     },
     {
-      "id": "2",
-      "userId": "user01",
-      "date": "2026-04-11",
-      "type": "income",
-      "categoryId": "category02",
-      "amount": 12000,
-      "memo": "점심 식사"
+      "id": "exp_2",
+      "name": "교통비",
+      "color": "yellow",
+      "icon": "주소"
     },
     {
-      "userId": "user01",
-      "date": "2026-04-11",
-      "type": "income",
-      "categoryId": "category02",
-      "amount": 12000,
-      "memo": "점심 식사",
-      "id": "Awk0H_p"
+      "id": "exp_3",
+      "name": "여가/취미",
+      "color": "purple",
+      "icon": "주소"
+    },
+    {
+      "id": "exp_4",
+      "name": "기타",
+      "color": "gray",
+      "icon": "주소"
     }
   ]
 }
