@@ -1,28 +1,65 @@
 {
-  "todos": [
+  "incomeCategory": [
+    {
+      "id": 1,
+      "name": "월급",
+      "color": "red",
+      "icon": "주소"
+    },
+    {
+      "id": 2,
+      "name": "보험비환급",
+      "color": "red",
+      "icon": "주소"
+    },
+    {
+      "id": 3,
+      "name": "부수입",
+      "color": "red",
+      "icon": "주소"
+    },
+    {
+      "id": 4,
+      "name": "부수입2",
+      "color": "red",
+      "icon": "주소"
+    }
+  ],
+  "users": [
+    {
+      "id": "user01",
+      "name": "홍길동",
+      "nickname": "잔고야",
+      "password": "1234"
+    }
+  ],
+  "budgets": [
     {
       "id": "1",
-      "todo": "야구장",
-      "desc": "프로야구 경기도 봐야합니다.",
-      "done": false
+      "userId": "user01",
+      "date": "2026-04-07",
+      "type": "expense",
+      "categoryId": "category01",
+      "amount": 12000,
+      "memo": "점심 식사"
     },
     {
       "id": "2",
-      "todo": "놀기",
-      "desc": "노는 것도 중요합니다.",
-      "done": false
+      "userId": "user01",
+      "date": "2026-04-11",
+      "type": "income",
+      "categoryId": "category02",
+      "amount": 12000,
+      "memo": "점심 식사"
     },
     {
-      "id": "3",
-      "todo": "Vue 학습",
-      "desc": "Vue 학습을 해야 합니다",
-      "done": false
-    },
-    {
-      "id": "4",
-      "todo": "ES6 공부",
-      "desc": "ES6공부를 해야 합니다",
-      "done": false
+      "userId": "user01",
+      "date": "2026-04-11",
+      "type": "income",
+      "categoryId": "category02",
+      "amount": 12000,
+      "memo": "점심 식사",
+      "id": "Awk0H_p"
     }
   ]
 }
