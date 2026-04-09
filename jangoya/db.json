@@ -12,6 +12,13 @@
       "name": "우진",
       "email": "wls8428@gmail.com",
       "password": "1234"
+    },
+    {
+      "id": "1775724547640",
+      "userId": "test",
+      "name": "우진",
+      "email": "wls5558@gmail.com",
+      "password": "1234"
     }
   ],
   "budgets": [
