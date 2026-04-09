@@ -5,6 +5,13 @@
       "userId": "1",
       "name": "홍길동",
       "password": "1234"
+    },
+    {
+      "id": "1775724270550",
+      "userId": "박",
+      "name": "우진",
+      "email": "wls8428@gmail.com",
+      "password": "1234"
     }
   ],
   "budgets": [
