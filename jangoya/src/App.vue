@@ -1,14 +1,22 @@
 <template>
   <div>
-    <h2>콘솔을 확인합니다.</h2>
-  </div>
-
-  <div>
-    <Header />
-    <router-view></router-view>
+    <router-view />
   </div>
 </template>
 
 <script setup>
-import Header from './components/Header.vue';
+import { useUserStore } from '@/stores/userStore'
+import { useRouter } from 'vue-router'
+import { onMounted } from 'vue'
+
+const userStore = useUserStore()
+const router = useRouter()
+
+onMounted(() => {
+  userStore.initUser()
+
+  if (!userStore.isLoggedIn) {
+    router.push('/user/login')
+  }
+})
 </script>
