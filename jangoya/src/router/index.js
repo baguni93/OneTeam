@@ -19,6 +19,7 @@ import Budget from '@/pages/budget/Budget.vue';
 import DeleteBudget from '@/pages/budget/DeleteBudget.vue';
 import EditBudget from '@/pages/budget/EditBudget.vue';
 import NewBudget from '@/pages/budget/NewBudget.vue';
+import SelectModalCategory from '@/pages/transaction/SelectModalCategory.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,10 +45,17 @@ const router = createRouter({
       name: 'transaction/select/category',
       component: SelectCategory,
     },
+
     {
       path: '/transaction/edit/:id',
-      name: 'transaction/edit/:id',
+      name: 'transaction/edit/id',
       component: EditTransction,
+      children: [
+        {
+          path: 'modalcategory',
+          component: SelectModalCategory,
+        },
+      ],
     },
     {
       path: '/search',

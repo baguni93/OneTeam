@@ -8,31 +8,11 @@
 <script setup>
 import Header from './components/Header.vue';
 import { reactive, computed, provide } from 'vue';
+import axios from 'axios';
 
-const ts = new Date().getDate.toString();
-
+const BASEURI = '/api/budgets';
 const states = reactive({
-  budgets: [
-    {
-      id: 1,
-      userId: '1',
-      date: ts,
-      type: 'expense',
-      categoryId: '4',
-      amount: '10000',
-      memo: '마라탕 맛있네ㅎㅎ',
-    },
-    {
-      id: 2,
-      userId: '1',
-      date: ts,
-      type: 'income',
-      categoryId: '4',
-      amount: '10000',
-      memo: '용돈 사랑해',
-    },
-  ],
-
+  budgets: [],
   categories: [
     {
       id: '1',
@@ -69,7 +49,7 @@ const states = reactive({
     {
       id: '5',
       userId: '1',
-      type: 'expens',
+      type: 'expense',
       name: '교통비',
       color: 'yellow',
       icon: '주소',
@@ -77,29 +57,77 @@ const states = reactive({
   ],
 });
 
+const ts = new Date().getDate.toString();
+
+const fetchBudget = async () => {
+  try {
+    const response = await axios.get(BASEURI);
+    if (response.status === 200) {
+      states.budgets = response.data;
+    } else {
+      alert('데이터 조회 실패');
+    }
+  } catch (error) {
+    alert('에러발생 :' + error);
+  }
+};
+
 //date 받아옴
 
 //거래내역 추가
-const addBudget = ({ date, categoryId, amount, memo }) => {
-  states.budgets.push({
-    id: new Date().getTime(),
-    date,
-    categoryId,
-    amount,
-    memo,
-  });
+const addBudget = async (
+  { date, type, categoryId, amount, memo },
+  successCallback,
+) => {
+  try {
+    const payload = { date, type, categoryId, amount, memo };
+    const response = await axios.post(BASEURI, payload);
+
+    if (response.status === 201) {
+      states.budgets.push({ ...response.data });
+      successCallback();
+    } else {
+      alert('추가 실패');
+    }
+  } catch (error) {
+    alert('에러발생 :' + error);
+  }
 };
 
 //거래내역 수정 - 금액 , 메모 , 카테고리
-const updateBudget = (id, categoryId, amount, memo) => {
-  let index = states.budgets.findIndex((x) => x.id == id);
-  states.budgets[index] = { ...state.budgets[index], categoryId, amount, memo };
+const updateBudget = async (
+  { id, date, type, categoryId, amount, memo },
+  successCallback,
+) => {
+  try {
+    const payload = { id, date, type, categoryId, amount, memo };
+    const res = await axios.put(BASEURI + `/${id}`, payload);
+    if (res.status === 200) {
+      let index = states.budgets.findIndex((x) => x.id === id);
+      states.budgets[index] = payload;
+      successCallback();
+    } else {
+      alert('변경 실패');
+    }
+  } catch (error) {
+    alert('에러발생 :' + error);
+  }
 };
 
 //거래내역 삭제
-const deleteBudget = () => {
-  let index = states.budgets.findIndex((x) => x.id == id);
-  states.budgets.splice(index, 1);
+const deleteBudget = async () => {
+  try {
+    const res = await axios.delete(BASEURI + `/${id}`);
+
+    if (res.status === 200) {
+      let index = states.budgets.findIndex((x) => x.id === id);
+      states.budgets.splice(index, 1);
+    } else {
+      alert('삭제 실패');
+    }
+  } catch (e) {
+    alert('에러발생 :' + e);
+  }
 };
 
 // provide('state', states)
@@ -111,5 +139,7 @@ provide(
   'categories',
   computed(() => states.categories),
 );
-provide('actions', { addBudget, updateBudget, deleteBudget });
+provide('actions', { fetchBudget, addBudget, updateBudget, deleteBudget });
+
+fetchBudget();
 </script>

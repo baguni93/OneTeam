@@ -9,13 +9,15 @@
       <div class="form-group" style="background-color: aqua">
         <label> ₩ : </label>
         <input
-          type="text"
+          type="number"
           class="form-control"
-          id="todo"
-          v-model="budgetItem.amount"
+          v-model.number="budgetItem.amount"
         />
       </div>
-
+      <div class="form-group" style="background-color: cadetblue">
+        <label> 메모 : </label>
+        <input type="text" class="form-control" v-model="budgetItem.memo" />
+      </div>
       <div class="form-group">
         <button
           type="button"
@@ -40,7 +42,7 @@
               path: '/transaction/select/category',
               state: {
                 amount: budgetItem.amount,
-                categoryType: 'expens',
+                categoryType: 'expense',
               },
             })
           "
@@ -60,15 +62,15 @@
 </template>
 
 <script setup>
-import { inject, reactive } from 'vue';
+import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
 const ts = new Date();
 
 const router = useRouter();
-const { addBudget } = inject('actions');
+
 const budgetItem = reactive({
-  date: new Date().toDateString,
+  date: new Date().toDateString(),
   categoryId: '',
   amount: 0,
   memo: '',

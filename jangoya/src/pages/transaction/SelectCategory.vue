@@ -4,9 +4,9 @@
 
   <ul class="list-group">
     <li
-      v-for="categoryItem in categoriesTest"
+      v-for="categoryItem in categoryItems"
       :key="categoryItem.id"
-      @click="addTodoHandler(categoryItem.id)"
+      @click="addBudgetHandler(categoryItem.id)"
     >
       <div style="background-color: blue">
         카테고리 Id : {{ categoryItem.id }} / 카테고리 이름 :
@@ -42,22 +42,25 @@
 import { useRouter } from 'vue-router';
 import { inject } from 'vue';
 let router = useRouter();
-const amount = history.state.amount;
-const type = history.state.categoryType;
 let categories = inject('categories');
 
-let categoriesTest = categories.value.filter((x) => x.type === type);
+const amount = history.state?.amount;
+const type = history.state?.categoryType;
+
+let categoryItems = categories.value.filter((x) => x.type === type);
 
 const { addBudget } = inject('actions');
 
-const addTodoHandler = (categoryItemId) => {
+const addBudgetHandler = (categoryItemId) => {
   const budgetItem = {
     date: new Date().toDateString(),
+    type: type,
     categoryId: categoryItemId,
     amount: amount,
     memo: '',
   };
-  addBudget({ ...budgetItem });
-  router.push('/');
+  addBudget({ ...budgetItem }, () => {
+    router.push('/');
+  });
 };
 </script>
