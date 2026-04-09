@@ -13,7 +13,6 @@ import CategoryFilter from '@/pages/categoryfilter/CategoryFilter.vue';
 import Category from '@/pages/category/Category.vue';
 import AddCategory from '@/pages/category/AddCategory.vue';
 import CategoryIcon from '@/pages/category/CategoryIcon.vue';
-import CategoryColor from '@/pages/category/CategoryColor.vue';
 import EditCategory from '@/pages/category/EditCategory.vue';
 import Budget from '@/pages/budget/Budget.vue';
 import DeleteBudget from '@/pages/budget/DeleteBudget.vue';
@@ -65,7 +64,7 @@ const router = createRouter({
       component: Category,
     },
     {
-      path: '/mypage/category/edit',
+      path: '/mypage/category/edit/:id',
       name: 'mypage/category/edit',
       component: EditCategory,
     },
@@ -78,11 +77,6 @@ const router = createRouter({
       path: '/categoryicon',
       name: 'categoryicon',
       component: CategoryIcon,
-    },
-    {
-      path: '/categorycolor',
-      name: 'categorycolor',
-      component: CategoryColor,
     },
     {
       path: '/budget',
