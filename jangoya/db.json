@@ -56,7 +56,7 @@
     {
       "id": "4",
       "userId": "1",
-      "type": "income",
+      "type": "expense",
       "name": "식비",
       "color": "orange",
       "icon": "주소"
@@ -64,7 +64,7 @@
     {
       "id": "5",
       "userId": "1",
-      "type": "income",
+      "type": "expense",
       "name": "교통비",
       "color": "yellow",
       "icon": "주소"
