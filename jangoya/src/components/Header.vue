@@ -7,8 +7,28 @@
     <div :class="navClass">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <router-link class="nav-link" :to="{ name: 'transction' }"
+          <router-link class="nav-link" :to="{ name: 'main' }"
             >요약 카드 , 달력 , 거래내역</router-link
+          >
+        </li>
+        <li class="nav-item">
+          <router-link class="nav-link" :to="{ name: 'mypage' }"
+            >마이페이지</router-link
+          >
+        </li>
+        <li class="nav-item">
+          <router-link class="nav-link" :to="{ name: 'budget' }"
+            >예산설정</router-link
+          >
+        </li>
+        <li class="nav-item">
+          <router-link class="nav-link" :to="{ name: 'search' }"
+            >검색</router-link
+          >
+        </li>
+        <li class="nav-item">
+          <router-link class="nav-link" :to="{ name: 'mypage/category' }"
+            >마이페이스 -> 카테리로 이동합니다.</router-link
           >
         </li>
       </ul>
