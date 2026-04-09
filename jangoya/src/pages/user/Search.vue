@@ -197,10 +197,10 @@ const selectedCategoriesLabels = computed(() => {
 });
 
 const categories = ref([]); // db.json에서 불러온 전체 카테고리 목록
-onMounted(async () => {
-  const res = await axios.get('http://localhost:3000/categories');
-  categories.value = res.data; // 불러온 데이터 categories 에 저장
-});
+// onMounted(async () => {
+//   const res = await axios.get('http://localhost:3000/categories');
+//   categories.value = res.data; // 불러온 데이터 categories 에 저장
+// });
 
 const getCategoryName = (categoryId) => {
   const cat = categories.value.find((c) => c.id === categoryId);
