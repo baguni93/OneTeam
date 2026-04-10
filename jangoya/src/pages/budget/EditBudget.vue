@@ -40,6 +40,11 @@ const form = reactive({
 const categoryBudgets = reactive({});
 
 const handleUpdate = async() => {
+    const totalCategory = Object.values(categoryBudgets).reduce((sum,amount)=> sum + Number(amount), 0);
+    if(totalCategory > Number(form.total_budget)) {
+        alert('카테고리 예산 합계가 총 예산을 초과할 수 없어요! 😅');
+        return;
+    }
     const category_budgets = Object.entries(categoryBudgets)
     .filter(([_, amount])=> amount > 0)
     .map(([categoryId, amount])=> ({categoryId, amount: Number(amount)}));

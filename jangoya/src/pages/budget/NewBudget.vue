@@ -52,6 +52,11 @@ const handleSubmit = async() => {
         alert('카테고리별 예산에 숫자를 입력해주세요!');
         return;
     }
+    const totalCategory = Object.values(categoryBudgets).reduce((sum,amount)=> sum + Number(amount), 0);
+    if(totalCategory > Number (form.total_budget)) {
+        alert('카테고리 예산 합계가 총 예산을 초과할 수 없어요!😅');
+        return;
+    }
     await budgetPlanStore.fetchBudgetPlan({userId: '1', month: form.month});
     if(budgetPlanStore.budget) {
         alert('이미 예산이 설정되어 있어요:(');
