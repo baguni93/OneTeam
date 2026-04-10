@@ -102,14 +102,14 @@ const goMypage = () => {
 };
 
 // 2. 데이터 가져오기
-// onMounted(() => {
-//   fetch('/api/categories?userId=1')
-//     .then((res) => res.json())
-//     .then((data) => {
-//       categories.value = data;
-//     })
-//     .catch((err) => console.error('데이터 로딩 실패:', err));
-// });
+onMounted(() => {
+  fetch('/api/categories?userId=1')
+    .then((res) => res.json())
+    .then((data) => {
+      categories.value = data;
+    })
+    .catch((err) => console.error('데이터 로딩 실패:', err));
+});
 
 // 3. 타입별 필터링
 const incomeCategories = computed(() =>
