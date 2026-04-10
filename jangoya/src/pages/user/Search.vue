@@ -116,6 +116,12 @@
 import { ref, computed } from 'vue';
 import axios from 'axios';
 import { onMounted } from 'vue';
+// 로그인 한 사용자 불러오기 (민성님)
+import { useUserStore } from '@/stores/userStore';
+const userStore = useUserStore();
+userStore.initUser(); // 민성님 코드에서 이것만 추가함 !
+const currentUser = userStore.getCurrentUser();
+
 // ======================
 // 1.기간
 // ======================
@@ -169,7 +175,11 @@ const weekRange = computed(() => {
 const showCategoryTab = ref(false); // 카테고리 탭 열고 닫는 상태
 const openType = ref([]); // 수입,지출 열림 상태
 const selectedCategories = ref([]); //사용자가 선택한 카테고리 id 목록
-
+const categories = ref([]); // db.json에서 불러온 전체 카테고리 목록
+// onMounted(async () => {
+//   const res = await axios.get('http://localhost:3000/categories');
+//   categories.value = res.data; // 불러온 데이터 categories 에 저장
+// });
 // (토글 함수, 수입/지출) type : income, expense
 const toggleType = (type) => {
   const idx = openType.value.indexOf(type);
@@ -195,12 +205,6 @@ const selectedCategoriesLabels = computed(() => {
       : '';
   });
 });
-
-const categories = ref([]); // db.json에서 불러온 전체 카테고리 목록
-// onMounted(async () => {
-//   const res = await axios.get('http://localhost:3000/categories');
-//   categories.value = res.data; // 불러온 데이터 categories 에 저장
-// });
 
 const getCategoryName = (categoryId) => {
   const cat = categories.value.find((c) => c.id === categoryId);
@@ -231,6 +235,7 @@ const search = async () => {
   let data = res.data;
   console.log(data.length);
   console.log(data);
+  data = data.filter((item) => String(item.userId) === String(currentUser?.id)); // 현재 로그인한 유저 데이터만 필터링
 
   // 기간 필터 (선택했을 때만 적용)
   if (selectedPeriod.value === 'week') {
@@ -261,7 +266,7 @@ const search = async () => {
     data = data.filter(
       (item) =>
         String(item.amount).includes(keyword.value) ||
-        item.memo.includes(keyword.value),
+        (item.memo ?? '').includes(keyword.value),
     ); // amount 와 memo 에서 일치하는 값 찾기
   }
   results.value = data;
