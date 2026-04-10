@@ -17,7 +17,7 @@
           >
         </li>
         <li class="nav-item">
-          <router-link class="nav-link" :to="{ name: 'budget' }"
+          <router-link class="nav-link" :to="{ name: 'budget/new' }"
             >예산설정</router-link
           >
         </li>
