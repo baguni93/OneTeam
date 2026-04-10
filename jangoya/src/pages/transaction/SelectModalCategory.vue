@@ -25,13 +25,16 @@
 
 <script setup>
 import { useRouter, useRoute } from 'vue-router';
-import { inject } from 'vue';
+import { useBudgetStore } from '@/stores/dateStore';
+import { storeToRefs } from 'pinia';
+
+const budgetStore = useBudgetStore();
+const { categories } = storeToRefs(budgetStore);
+
 const router = useRouter();
 const currentRoute = useRoute();
 
-let categories = inject('categories');
 const type = history.state?.categoryType;
-console.log(type);
 let categoryItems = categories.value.filter((x) => x.type === type);
 
 const exit = () => {

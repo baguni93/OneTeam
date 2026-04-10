@@ -132,6 +132,6 @@ const completeSelection = () => {
   }
 
   // 3. 출발!
-  router.push(pushData);
+  router.replace(pushData);
 };
 </script>

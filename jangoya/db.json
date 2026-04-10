@@ -5,39 +5,17 @@
       "userId": "1",
       "name": "홍길동",
       "password": "1234"
-    },
-    {
-      "id": "1775724270550",
-      "userId": "박",
-      "name": "우진",
-      "email": "wls8428@gmail.com",
-      "password": "1234"
-    },
-    {
-      "id": "1775724547640",
-      "userId": "test",
-      "name": "우진",
-      "email": "wls5558@gmail.com",
-      "password": "1234"
     }
   ],
   "budgets": [
     {
-      "id": "1",
-      "userId": "1",
-      "date": "2026-04-07",
-      "type": "expense",
-      "categoryId": "4",
-      "amount": 12000,
-      "memo": "점심 식사"
-    },
-    {
-      "id": "Z59oxpi",
-      "date": "Thu Apr 09 2026",
+      "date": "2026-04-10",
       "type": "income",
-      "categoryId": "4",
-      "amount": 100000,
-      "memo": "테스트"
+      "categoryId": "2",
+      "amount": 10000,
+      "memo": "",
+      "userId": "1",
+      "id": 1
     }
   ],
   "categories": [
@@ -84,16 +62,24 @@
   ],
   "budget_plans": [
     {
-      "id": "1",
       "userId": "1",
       "month": "2026-04",
-      "total_budget": 1000000,
+      "total_budget": 10000,
       "category_budgets": [
         {
           "categoryId": "1",
-          "amount": 500000
+          "amount": 123
+        },
+        {
+          "categoryId": "2",
+          "amount": 1231
+        },
+        {
+          "categoryId": "3",
+          "amount": 123
         }
-      ]
+      ],
+      "id": 1
     }
   ]
 }
