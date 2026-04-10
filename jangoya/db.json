@@ -77,18 +77,5 @@
       "icon": "주소"
     }
   ],
-  "budget_plans": [
-    {
-      "id": "1",
-      "userId": "1",
-      "month": "2026-04",
-      "total_budget": 1000000,
-      "category_budgets": [
-        {
-          "categoryId": "1",
-          "amount": 500000
-        }
-      ]
-    }
-  ]
+  "budget_plans": []
 }
