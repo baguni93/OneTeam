@@ -115,15 +115,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import axios from 'axios';
-
-// 로그인 한 사용자 불러오기 (민성님)
-import { useUserStore } from '@/stores/userStore';
-const userStore = useUserStore();
-userStore.initUser();
-const currentUser = userStore.getCurrentUser();
-console.log(currentUser); // 유저 객체 전체 확인
-console.log(currentUser?.id);
-
+import { onMounted } from 'vue';
 // ======================
 // 1.기간
 // ======================
@@ -239,7 +231,6 @@ const search = async () => {
   let data = res.data;
   console.log(data.length);
   console.log(data);
-  data = data.filter((item) => String(item.userId) === String(currentUser?.id));
 
   // 기간 필터 (선택했을 때만 적용)
   if (selectedPeriod.value === 'week') {
