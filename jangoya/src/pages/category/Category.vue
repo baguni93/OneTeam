@@ -92,6 +92,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/userStore';
+import axios from 'axios';
 
 // 1. 카테고리 상태 관리
 const categories = ref([]);
@@ -100,15 +102,22 @@ const goMypage = () => {
   console.log('마이페이지로 돌아갑니다.');
   router.push({ name: 'mypage' });
 };
+const userStore = useUserStore();
 
 // 2. 데이터 가져오기
-onMounted(() => {
-  fetch('/api/categories?userId=1')
-    .then((res) => res.json())
-    .then((data) => {
-      categories.value = data;
-    })
-    .catch((err) => console.error('데이터 로딩 실패:', err));
+onMounted(async () => {
+  // await를 쓰기 위해 async를 붙여줍니다.
+  try {
+    const res = await axios.get('/api/categories', {
+      params: {
+        userId: userStore.getCurrentUser().id,
+      },
+    });
+
+    categories.value = res.data; // data 안에 결과가 예쁘게 들어있습니다.
+  } catch (err) {
+    console.error('데이터 로딩 실패:', err);
+  }
 });
 
 // 3. 타입별 필터링

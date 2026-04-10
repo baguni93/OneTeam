@@ -1,46 +1,64 @@
 <template>
-  <div>Main</div>
-  <br />
+  <div class="container mt-4">
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <div class="card text-center p-3">
+          <div>수입</div>
+          <h5>{{ sumAmount('income') }}원</h5>
+        </div>
+      </div>
 
-  <p>----------</p>
+      <div class="col-md-4">
+        <div class="card text-center p-3">
+          <div>지출</div>
+          <h5>{{ sumAmount('expense') }}원</h5>
+        </div>
+      </div>
 
-  <div>수입 : {{ sumAmount('income') }}원</div>
-  <br />
-  <div>지출 : {{ sumAmount('expense') }}원</div>
-  <br />
-  <div>
-    현금 잔액 : {{ currentAmount(sumAmount('income'), sumAmount('expense')) }}원
+      <div class="col-md-4">
+        <div class="card text-center p-3">
+          <div>잔액</div>
+          <h5>
+            {{ currentAmount(sumAmount('income'), sumAmount('expense')) }}원
+          </h5>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <Calendar />
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end mb-3">
+      <router-link class="btn btn-primary" to="search"> + 검색 </router-link>
+      <router-link class="btn btn-primary" to="category/filter">
+        + 필터
+      </router-link>
+      <router-link class="btn btn-primary" to="transction/add">
+        + 추가
+      </router-link>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <TransctionList />
+      </div>
+    </div>
   </div>
-  <br />
-  <p>----------</p>
-  <div></div>
-  <div><FullCalendar :options="calendarOptions" /></div>
-  <br />
-
-  <p>----------</p>
-  <router-link class="btn btn-primary" to="transction/add">
-    빠른 거래내역 추가
-  </router-link>
-  <TransctionList />
-
-  <p>----------</p>
 </template>
 
 <script setup>
 import TransctionList from '@/components/TransctionList.vue';
-import { inject } from 'vue';
-import FullCalendar from '@fullcalendar/vue3';
-import dayGridPlugin from '@fullcalendar/daygrid';
+import Calendar from '@/components/Calendar.vue';
+import { useBudgetStore } from '@/stores/dateStore';
 
-const calendarOptions = {
-  plugins: [dayGridPlugin],
-  initialView: 'dayGridMonth',
-};
-
-const budgets = inject('budgets');
+const budgetsStore = useBudgetStore();
+const budgets = budgetsStore.budgets;
 
 const sumAmount = (type) => {
-  const incomeBudgets = budgets.value.filter((x) => x.type === type);
+  const incomeBudgets = budgets.filter((x) => x.type === type);
   let sum = 0;
 
   incomeBudgets.forEach((x) => {

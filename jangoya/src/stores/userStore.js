@@ -34,6 +34,10 @@ export const useUserStore = defineStore('user', () => {
         success: false,
         message: error.response?.data?.message || '로그인에 실패했습니다',
       };
+      return {
+        success: false,
+        message: error.response?.data?.message || '로그인에 실패했습니다',
+      };
     }
   };
 

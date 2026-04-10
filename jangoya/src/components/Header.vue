@@ -47,9 +47,11 @@ const userStore = useUserStore();
 const router = useRouter();
 
 const state = reactive({ isNavShow: false });
+
 const navClass = computed(() =>
   state.isNavShow ? 'collapse navbar-collapse show' : 'collapse navbar-collapse',
 );
+
 const changedIsNavShow = () => {
   state.isNavShow = !state.isNavShow;
 };
