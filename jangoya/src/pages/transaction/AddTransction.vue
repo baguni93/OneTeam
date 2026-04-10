@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <div class="col p-3">
-      <h2>{{ ts }}</h2>
+      <h2>{{ dateStore.selectedDate }}</h2>
     </div>
   </div>
   <div class="row">
@@ -64,9 +64,8 @@
 <script setup>
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
-
-const ts = new Date();
-
+import { useDateStore } from '@/stores/dateStore';
+const dateStore = useDateStore();
 const router = useRouter();
 
 const budgetItem = reactive({

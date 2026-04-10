@@ -1,43 +1,58 @@
 <template>
   <div class="row">
     <div class="col p-3">
-      <div>오늘 날짜 : {{ ts }}</div>
-      <div v-if="budgets.length > 0">
-        거래 내역 수입 : {{ sumAmount('income') }}원 지출 :
-        {{ sumAmount('expense') }}원
+      <div>
+        {{ selectedDate }}
+        <span v-if="budgets.length > 0">
+          수입 {{ sumAmount('income') }} 지출 {{ sumAmount('expense') }}
+        </span>
       </div>
-
-      <div v-if="budgets.length <= 0">지출 내역이 없어요.</div>
     </div>
   </div>
   <div class="row">
     <div class="col">
-      <ul class="list-group" style="background-color: aqua">
-        <TrasctionItem
-          v-for="budgetItem in budgets"
-          :key="budgetItem.id"
-          :budgetItem="budgetItem"
-        ></TrasctionItem>
-      </ul>
+      <div class="card">
+        <div class="card-body">
+          <div class="header" v-if="filterBudgets.length <= 0">
+            지출 내역이 없어요.
+          </div>
+          <ul class="list-group" style="background-color: aqua">
+            <TrasctionItem
+              v-for="budgetItem in filterBudgets"
+              :key="budgetItem.id"
+              :budgetItem="budgetItem"
+            ></TrasctionItem>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { inject } from 'vue';
+import { useDateStore } from '@/stores/dateStore';
+import { useBudgetStore } from '@/stores/dateStore';
 import TrasctionItem from './TrasctionItem.vue';
+import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
 
-const ts = new Date().toDateString();
-const budgets = inject('budgets');
+const budgetStore = useBudgetStore();
+const { budgets } = storeToRefs(budgetStore);
+
+const dateStore = useDateStore();
+const { selectedDate } = storeToRefs(dateStore);
+
+const filterBudgets = computed(() => {
+  if (!selectedDate.value) return budgets.value;
+
+  return budgets.value.filter(
+    (x) => String(x.date) === String(selectedDate.value),
+  );
+});
 
 const sumAmount = (type) => {
-  const incomeBudgets = budgets.value.filter((x) => x.type === type);
-  let sum = 0;
-
-  incomeBudgets.forEach((x) => {
-    sum += x.amount;
-  });
-
-  return sum;
+  return filterBudgets.value
+    .filter((x) => x.type === type)
+    .reduce((sum, x) => sum + x.amount, 0);
 };
 </script>
