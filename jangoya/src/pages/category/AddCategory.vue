@@ -53,6 +53,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { useUserStore } from '@/stores/userStore';
+
+// ✨ 1. axios를 꼭 import 해주세요!
+import axios from 'axios';
 
 const router = useRouter();
 const route = useRoute();
@@ -62,6 +66,7 @@ const categoryName = ref('');
 const selectedIcon = ref('bi-star');
 const selectedColor = ref('black');
 const categoryType = ref('expense');
+const userStore = useUserStore();
 
 const goToIconSelect = () => {
   router.push({
@@ -79,6 +84,8 @@ const goToIconSelect = () => {
 onMounted(() => {
   if (route.query.name) categoryName.value = route.query.name;
   if (route.query.type) categoryType.value = route.query.type;
+  if (route.query.icon) selectedIcon.value = route.query.icon;
+  if (route.query.color) selectedColor.value = route.query.color;
 });
 
 // 1. 중복 확인
@@ -89,11 +96,19 @@ const checkAndSubmit = async () => {
   }
 
   try {
-    const response = await fetch('/api/categories?userId=1');
-    const existingCategories = await response.json();
+    const response = await axios.get('/api/categories', {
+      params: {
+        userId: userStore.getCurrentUser().id,
+      },
+    });
+
+    const existingCategories = response.data;
 
     const isDuplicate = existingCategories.some((category) => {
-      return category.name === categoryName.value && category.type===categoryType.value;
+      return (
+        category.name === categoryName.value &&
+        category.type === categoryType.value
+      );
     });
 
     if (isDuplicate) {
@@ -101,33 +116,33 @@ const checkAndSubmit = async () => {
       return;
     }
 
-    // 검문을 무사히 통과하면 아래에 있는 2번 함수를 호출합니다!
-    submitCategory();
+    // 통과했다면 진짜 저장/수정 함수 실행!
+    submitCategory(); // ✨ 세미콜론(;) 추가
   } catch (error) {
     console.error('중복 검사 중 에러 발생:', error);
   }
 };
 
-// ✅ 2. 진짜 저장 함수 (얘도 독립적으로 밖으로 빼냈습니다)
-const submitCategory = () => {
-  const newCategory = {
-    userId: '1',
-    type: categoryType.value,
-    name: categoryName.value,
-    color: selectedColor.value,
-    icon: selectedIcon.value,
-  };
+// ✅ 2. 진짜 저장 함수 (try...catch 문법 깔끔하게 정리!)
+const submitCategory = async () => {
+  try {
+    const newCategory = {
+      userId: userStore.getCurrentUser().id,
+      type: categoryType.value,
+      name: categoryName.value,
+      color: selectedColor.value,
+      icon: selectedIcon.value,
+    };
 
-  fetch('/api/categories', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(newCategory),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      alert('카테고리가 추가되었습니다!');
-      router.back();
-    })
-    .catch((err) => console.error('추가 실패:', err));
+    // ✨ 2. POST는 params 없이 데이터를 바로 두 번째 자리에 던져줍니다!
+    await axios.post('/api/categories', newCategory);
+
+    // ✨ 3. await로 통신이 끝날 때까지 기다렸다가 성공하면 아래 코드가 실행됩니다.
+    alert('카테고리가 추가되었습니다!');
+    router.back();
+  } catch (err) {
+    // ✨ 에러가 나면 이쪽으로 빠집니다.
+    console.error('추가 실패:', err);
+  }
 };
 </script>

@@ -67,6 +67,11 @@ const router = createRouter({
       component: CategoryFilter,
     },
     {
+      path: '/test-filter', // 주소창에 칠 주소
+      name: 'testFilter',
+      component: () => import('@/pages/categoryfilter/FilterTest.vue'), // 아까 만든 테스트 파일 경로
+    },
+    {
       path: '/mypage/category',
       name: 'mypage/category',
       component: Category,
