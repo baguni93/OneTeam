@@ -9,11 +9,13 @@
           width: 100px;
           height: 100px;
           border-radius: 50%;
-          background-color: #ddd;
+          background-color: #f5c842;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 40px;
+          font-size: 80px;
+          overflow: hidden;
+          line-height: 1;
         "
       >
         🙂
@@ -66,73 +68,74 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/userStore'
-import axios from 'axios'
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/userStore';
+import axios from 'axios';
 
-const router = useRouter()
-const userStore = useUserStore()
+const router = useRouter();
+const userStore = useUserStore();
 
-const currentUser = ref(null)
-const showEdit = ref(false)
-const newName = ref('')
-const newPassword = ref('')
-const showPassword = ref(false)
-const errorMsg = ref('')
-const successMsg = ref('')
+const currentUser = ref(null);
+const showEdit = ref(false);
+const newName = ref('');
+const newPassword = ref('');
+const showPassword = ref(false);
+const errorMsg = ref('');
+const successMsg = ref('');
 
 onMounted(() => {
-  document.title = '잔고야 - 마이페이지'
-  currentUser.value = userStore.getCurrentUser()
-})
+  document.title = '잔고야 - 마이페이지';
+  currentUser.value = userStore.getCurrentUser();
+});
 
 // 회원 정보 수정
 const updateUser = async () => {
-  errorMsg.value = ''
-  successMsg.value = ''
+  errorMsg.value = '';
+  successMsg.value = '';
 
   if (!newName.value && !newPassword.value) {
-    errorMsg.value = '수정할 정보를 입력해주세요'
-    return
+    errorMsg.value = '수정할 정보를 입력해주세요';
+    return;
   }
 
   try {
-    const updateData = {}
-    if (newName.value) updateData.name = newName.value
-    if (newPassword.value) updateData.password = newPassword.value
+    const updateData = {};
+    if (newName.value) updateData.name = newName.value;
+    if (newPassword.value) updateData.password = newPassword.value;
 
-    await axios.patch(`/api/users/${currentUser.value.id}`, updateData)
+    await axios.patch(`/api/users/${currentUser.value.id}`, updateData);
 
     if (newName.value) {
-      currentUser.value.name = newName.value
-      localStorage.setItem('user', JSON.stringify(currentUser.value))
-      userStore.user.name = newName.value
+      currentUser.value.name = newName.value;
+      // ✅ sessionStorage로 변경
+      sessionStorage.setItem('user', JSON.stringify(currentUser.value));
+      userStore.user.name = newName.value;
     }
 
-    successMsg.value = '수정이 완료되었습니다!'
-    newName.value = ''
-    newPassword.value = ''
+    successMsg.value = '수정이 완료되었습니다!';
+    newName.value = '';
+    newPassword.value = '';
   } catch (error) {
-    errorMsg.value = error.response?.data?.message || '수정에 실패했습니다'
+    errorMsg.value = error.response?.data?.message || '수정에 실패했습니다';
   }
-}
+};
 
 // 로그아웃
 const handleLogout = () => {
-  userStore.logout()
-  router.push('/user/login')
-}
+  userStore.logout();
+  router.push('/user/login');
+};
 
 // 회원탈퇴
 const handleDeleteUser = async () => {
-  if (!confirm('정말 탈퇴하시겠습니까?')) return
+  if (!confirm('정말 탈퇴하시겠습니까?')) return;
 
   try {
-    await userStore.deleteUser()
-    router.push('/user/login')
+    await userStore.deleteUser();
+    router.push('/user/login');
   } catch (error) {
-    errorMsg.value = '회원탈퇴에 실패했습니다'
+    errorMsg.value = '회원탈퇴에 실패했습니다';
   }
-}
+};
 </script>

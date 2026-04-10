@@ -15,6 +15,7 @@
           :type="showPassword ? 'text' : 'password'"
           placeholder="비밀번호를 입력해 주는 고야"
           v-model="password"
+          @keyup.enter="login"
         />
         <button @click="showPassword = !showPassword">👁</button>
       </div>
@@ -26,51 +27,53 @@
     <button @click="router.push('/user/register')">회원가입</button>
 
     <div>
-      <span class="link" @click="router.push('/user/findaccount')">아이디/비밀번호를 잊은고야?</span>
+      <span class="link" @click="router.push('/user/findaccount')"
+        >아이디/비밀번호를 잊은고야?</span
+      >
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/userStore'
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/userStore';
 
-const router = useRouter()
-const userStore = useUserStore()
+const router = useRouter();
+const userStore = useUserStore();
 
-const userId = ref('')
-const password = ref('')
-const showPassword = ref(false)
-const errorMsg = ref('')
+const userId = ref('');
+const password = ref('');
+const showPassword = ref(false);
+const errorMsg = ref('');
 
 onMounted(() => {
-  document.title = '잔고야 - 로그인'
-})
+  document.title = '잔고야 - 로그인';
+});
 
 const login = async () => {
   if (!userId.value && !password.value) {
-    errorMsg.value = '아이디와 비밀번호를 입력해주세요'
-    return
+    errorMsg.value = '아이디와 비밀번호를 입력해주세요';
+    return;
   }
   if (!userId.value) {
-    errorMsg.value = '아이디를 입력해주세요'
-    return
+    errorMsg.value = '아이디를 입력해주세요';
+    return;
   }
   if (!password.value) {
-    errorMsg.value = '비밀번호를 입력해주세요'
-    return
+    errorMsg.value = '비밀번호를 입력해주세요';
+    return;
   }
 
-  const result = await userStore.login(userId.value, password.value)
+  const result = await userStore.login(userId.value, password.value);
 
   if (result.success) {
-    errorMsg.value = ''
-    router.push('/')
+    errorMsg.value = '';
+    router.push('/');
   } else {
-    errorMsg.value = result.message
+    errorMsg.value = result.message;
   }
-}
+};
 </script>
 
 <style scoped>
