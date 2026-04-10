@@ -1,25 +1,34 @@
 <template>
   <div>
-    <header>
-      <button @click="router.back()">
-        <i class="bi bi-arrow-left"></i> 카테고리 홈으로 돌아가기
+    <header
+      style="display: flex; justify-content: space-between; align-items: center"
+    >
+      <button @click="handleBack">
+        <i class="bi bi-arrow-left"></i> 뒤로가기
       </button>
-
       <h2>카테고리 추가</h2>
-
       <button @click="checkAndSubmit">완료</button>
     </header>
 
     <section style="margin: 20px 0">
       <label>
-        <input type="radio" value="income" v-model="categoryType" /> 입금
+        <input type="radio" value="income" v-model="categoryStore.draft.type" />
+        입금
       </label>
       <label>
-        <input type="radio" value="expense" v-model="categoryType" /> 지출
+        <input
+          type="radio"
+          value="expense"
+          v-model="categoryStore.draft.type"
+        />
+        지출
       </label>
     </section>
 
-    <section @click="goToIconSelect" style="text-align: center; margin: 20px 0">
+    <section
+      @click="goToIconSelect"
+      style="text-align: center; margin: 20px 0; cursor: pointer"
+    >
       <div
         style="
           width: 80px;
@@ -29,21 +38,22 @@
           align-items: center;
           justify-content: center;
         "
-        :style="{ backgroundColor: selectedColor }"
+        :style="{ backgroundColor: categoryStore.draft.color }"
       >
         <i
-          :class="['bi', selectedIcon]"
+          :class="['bi', categoryStore.draft.icon]"
           style="color: white; font-size: 32px"
         ></i>
       </div>
-      <p>아이콘 변경</p>
+      <p style="margin-top: 10px; color: #666">아이콘 변경</p>
     </section>
 
     <section>
       이름 :
       <input
         type="text"
-        v-model="categoryName"
+        v-for-model="categoryStore.draft.name"
+        v-model="categoryStore.draft.name"
         placeholder="카테고리 이름 입력"
       />
     </section>
@@ -51,98 +61,61 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { useUserStore } from '@/stores/userStore';
-
-// ✨ 1. axios를 꼭 import 해주세요!
-import axios from 'axios';
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useCategoryStore } from '@/stores/categoryStore';
+// ✨ axios, useUserStore 삭제! (스토어가 다 알아서 합니다)
 
 const router = useRouter();
-const route = useRoute();
+const categoryStore = useCategoryStore();
 
-// 데이터 상태 관리
-const categoryName = ref('');
-const selectedIcon = ref('bi-star');
-const selectedColor = ref('black');
-const categoryType = ref('expense');
-const userStore = useUserStore();
+onMounted(() => {});
 
 const goToIconSelect = () => {
-  router.push({
-    name: 'categoryicon',
-    query: {
-      name: categoryName.value,
-      type: categoryType.value,
-      color: selectedColor.value,
-      icon: selectedIcon.value,
-      origin: 'mypage/category/add',
-    },
-  });
+  router.push({ name: 'categoryicon' });
 };
 
-onMounted(() => {
-  if (route.query.name) categoryName.value = route.query.name;
-  if (route.query.type) categoryType.value = route.query.type;
-  if (route.query.icon) selectedIcon.value = route.query.icon;
-  if (route.query.color) selectedColor.value = route.query.color;
-});
+const handleBack = () => {
+  categoryStore.resetDraft();
+  router.back();
+};
 
-// 1. 중복 확인
 const checkAndSubmit = async () => {
-  if (!categoryName.value.trim()) {
+  const { name, type } = categoryStore.draft;
+
+  if (!name.trim()) {
     alert('이름을 입력해주세요!');
     return;
   }
 
   try {
-    const response = await axios.get('/api/categories', {
-      params: {
-        userId: userStore.getCurrentUser().id,
-      },
-    });
+    // 💡 혹시 모르니 가장 최신 목록으로 한번 갱신해주고
+    await categoryStore.fetchCategoryList();
 
-    const existingCategories = response.data;
-
-    const isDuplicate = existingCategories.some((category) => {
-      return (
-        category.name === categoryName.value &&
-        category.type === categoryType.value
-      );
+    // 💡 스토어에 있는 배열(categoryList)을 검사합니다! (속도 향상)
+    const isDuplicate = categoryStore.categoryList.some((cat) => {
+      return cat.name === name && cat.type === type;
     });
 
     if (isDuplicate) {
-      alert('이미 존재하는 카테고리 이름입니다. 다른 이름을 입력해주세요.');
+      alert('이미 존재하는 카테고리 이름입니다.');
       return;
     }
 
-    // 통과했다면 진짜 저장/수정 함수 실행!
-    submitCategory(); // ✨ 세미콜론(;) 추가
+    await submitCategory();
   } catch (error) {
-    console.error('중복 검사 중 에러 발생:', error);
+    console.error('중복 검사 에러:', error);
   }
 };
 
-// ✅ 2. 진짜 저장 함수 (try...catch 문법 깔끔하게 정리!)
 const submitCategory = async () => {
   try {
-    const newCategory = {
-      userId: userStore.getCurrentUser().id,
-      type: categoryType.value,
-      name: categoryName.value,
-      color: selectedColor.value,
-      icon: selectedIcon.value,
-    };
-
-    // ✨ 2. POST는 params 없이 데이터를 바로 두 번째 자리에 던져줍니다!
-    await axios.post('/api/categories', newCategory);
-
-    // ✨ 3. await로 통신이 끝날 때까지 기다렸다가 성공하면 아래 코드가 실행됩니다.
-    alert('카테고리가 추가되었습니다!');
+    // 💡 괄호 안에 아무것도 안 넣어도 됩니다!
+    await categoryStore.saveCategory();
+    alert('카테고리가 성공적으로 추가되었습니다!');
     router.back();
   } catch (err) {
-    // ✨ 에러가 나면 이쪽으로 빠집니다.
-    console.error('추가 실패:', err);
+    alert('저장 중 오류가 발생했습니다.');
   }
 };
 </script>
