@@ -1,7 +1,7 @@
 <template>
   <div>
     <header>
-      <button @click="router.back()">
+      <button @click="router.push({ name: 'mypage/category' })">
         <i class="bi bi-arrow-left"></i> 뒤로가기
       </button>
 
@@ -40,12 +40,14 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/userStore';
+import axios from 'axios';
 
 const route = useRoute();
 const router = useRouter();
 const categoryId = route.params.id;
+const userStore = useUserStore();
 
-// 카테고리 데이터를 담을 상태
 const categoryData = ref({
   name: '',
   icon: '',
@@ -53,22 +55,21 @@ const categoryData = ref({
   type: '',
 });
 
-// 1. 페이지가 열릴 때 기존 데이터 불러오기
-onMounted(() => {
-  fetch(`/api/categories/${categoryId}`)
-    .then((res) => res.json())
-    .then((data) => {
-      categoryData.value = data;
+// 1. 페이지가 열릴 때 기존 데이터 불러오기 (✨ fetch를 axios로 통일!)
+onMounted(async () => {
+  try {
+    const res = await axios.get(`/api/categories/${categoryId}`);
+    categoryData.value = res.data; // ✨ axios는 .data로 바로 꺼냅니다!
 
-      // 아이콘 변경 페이지에 갔다가 돌아온 것이라면, 새 데이터로 덮어씌우기
-      if (route.query.name) categoryData.value.name = route.query.name;
-      if (route.query.icon) categoryData.value.icon = route.query.icon;
-      if (route.query.color) categoryData.value.color = route.query.color;
-    })
-    .catch((err) => console.error('데이터 로딩 실패:', err));
+    if (route.query.name) categoryData.value.name = route.query.name;
+    if (route.query.icon) categoryData.value.icon = route.query.icon;
+    if (route.query.color) categoryData.value.color = route.query.color;
+  } catch (err) {
+    console.error('데이터 로딩 실패:', err);
+  }
 });
 
-// 2. 아이콘 변경 페이지로 이동 (현재 입력된 값 들고 가기)
+// 2. 아이콘 변경 페이지로 이동
 const goToIconSelect = () => {
   router.push({
     name: 'categoryicon',
@@ -83,24 +84,28 @@ const goToIconSelect = () => {
   });
 };
 
-// 🚨 3. 중복 검문소: 빈 값과 이름 중복을 먼저 확인합니다.
+// 3. 중복 검문소
 const checkAndUpdate = async () => {
-  // 빈 값 방지
   if (!categoryData.value.name.trim()) {
     alert('이름을 입력해주세요!');
     return;
   }
 
   try {
-    // 유저 1번의 전체 카테고리 목록 가져오기
-    const response = await fetch(`/api/categories?userId=${1}`);
-    const existingCategories = await response.json();
+    const response = await axios.get('/api/categories', {
+      params: {
+        userId: userStore.getCurrentUser().id,
+      },
+    });
 
-    // 중복 검사: 이름이 똑같으면서 && 동시에 내 카테고리가 아닌 녀석이 있는지 검사!
+    // ✨ axios는 .json() 안 씁니다!
+    const existingCategories = response.data;
+
     const isDuplicate = existingCategories.some((category) => {
       return (
         category.name === categoryData.value.name &&
-        String(category.id) !== String(categoryId)
+        String(category.id) !== String(categoryId) &&
+        category.type === categoryData.value.type
       );
     });
 
@@ -109,44 +114,41 @@ const checkAndUpdate = async () => {
       return;
     }
 
-    // 무사히 통과했다면 진짜 수정 함수 실행!
     updateCategory();
   } catch (error) {
     console.error('중복 검사 중 에러 발생:', error);
   }
 };
 
-// ✅ 4. 진짜 수정 완료 요청 (PATCH)
-const updateCategory = () => {
-  // 기존 데이터에 userId를 묶어서 포장
-  const updatedData = {
-    ...categoryData.value,
-    userId: 1,
-  };
+// 4. 진짜 수정 완료 요청 (PATCH)
+const updateCategory = async () => {
+  try {
+    const updatedData = {
+      ...categoryData.value,
+      userId: userStore.getCurrentUser().id, // ✨ 1 대신 유저 스토어 사용!
+    };
 
-  // ✨ 바뀐 부분: PATCH 방식으로 통신합니다.
-  fetch(`/api/categories/${categoryId}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(updatedData),
-  })
-    .then((res) => res.json())
-    .then(() => {
-      alert('카테고리가 수정되었습니다!');
-      router.push('/mypage/category'); // 완료 후 카테고리 홈으로 이동
-    })
-    .catch((err) => console.error('수정 실패:', err));
+    // ✨ 중괄호 빼고 updatedData 덩어리만 쏙 던져줍니다!
+    await axios.patch(`/api/categories/${categoryId}`, updatedData);
+
+    alert('카테고리가 수정되었습니다!');
+    router.push('/mypage/category');
+  } catch (err) {
+    // ✨ 점(.) 빼고 올바른 try...catch 문법 적용!
+    console.error('수정 실패:', err);
+  }
 };
 
-// 5. 삭제 버튼: 데이터 삭제 요청 (DELETE)
-const deleteCategory = () => {
-  fetch(`/api/categories/${categoryId}`, {
-    method: 'DELETE',
-  })
-    .then(() => {
-      alert('카테고리가 삭제되었습니다.');
-      router.push('/mypage/category');
-    })
-    .catch((err) => console.error('삭제 실패:', err));
+// 5. 삭제 버튼
+const deleteCategory = async () => {
+  try {
+    await axios.delete(`/api/categories/${categoryId}`);
+
+    alert('카테고리가 삭제되었습니다.');
+    router.push('/mypage/category');
+  } catch (err) {
+    // ✨ 점(.) 빼고 올바른 try...catch 문법 적용!
+    console.error('삭제 실패:', err);
+  }
 };
 </script>
