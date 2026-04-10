@@ -40,16 +40,20 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import { inject } from 'vue';
-let router = useRouter();
-let categories = inject('categories');
+import { useBudgetStore } from '@/stores/dateStore';
+import { storeToRefs } from 'pinia';
+
+const budgetStore = useBudgetStore();
+const { categories } = storeToRefs(budgetStore);
+
+const router = useRouter();
 
 const amount = history.state?.amount;
 const type = history.state?.categoryType;
 
 let categoryItems = categories.value.filter((x) => x.type === type);
 
-const { addBudget } = inject('actions');
+const { addBudget } = budgetStore;
 
 const addBudgetHandler = (categoryItemId) => {
   const budgetItem = {

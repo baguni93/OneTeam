@@ -5,39 +5,34 @@
       "userId": "1",
       "name": "홍길동",
       "password": "1234"
-    },
-    {
-      "id": "1775724270550",
-      "userId": "박",
-      "name": "우진",
-      "email": "wls8428@gmail.com",
-      "password": "1234"
-    },
-    {
-      "id": "1775724547640",
-      "userId": "test",
-      "name": "우진",
-      "email": "wls5558@gmail.com",
-      "password": "1234"
     }
   ],
   "budgets": [
     {
-      "id": "1",
-      "userId": "1",
-      "date": "2026-04-07",
+      "date": "Fri Apr 10 2026",
       "type": "expense",
-      "categoryId": "4",
-      "amount": 12000,
-      "memo": "점심 식사"
+      "categoryId": "5",
+      "amount": 0,
+      "memo": "",
+      "userId": "1",
+      "id": 5
     },
     {
-      "id": "Z59oxpi",
-      "date": "Thu Apr 09 2026",
+      "id": 6,
+      "date": "2026-04-10",
       "type": "income",
-      "categoryId": "4",
-      "amount": 100000,
-      "memo": "테스트"
+      "categoryId": "2",
+      "amount": 0,
+      "memo": "ㄴㅇㅁㅇㅁ"
+    },
+    {
+      "date": "2026-04-10",
+      "type": "income",
+      "categoryId": "2",
+      "amount": 0,
+      "memo": "",
+      "userId": "1",
+      "id": 7
     }
   ],
   "categories": [
