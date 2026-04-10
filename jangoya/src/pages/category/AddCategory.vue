@@ -64,31 +64,22 @@
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCategoryStore } from '@/stores/categoryStore';
-import { useUserStore } from '@/stores/userStore';
-import axios from 'axios';
+// ✨ axios, useUserStore 삭제! (스토어가 다 알아서 합니다)
 
 const router = useRouter();
 const categoryStore = useCategoryStore();
-const userStore = useUserStore();
 
-onMounted(() => {
-  // 💡 만약 리스트 페이지에서 갓 넘어온 상태라면 서랍을 비워줍니다.
-  // (아이콘 페이지에서 돌아온 게 아닐 때만 초기화하기 위함)
-  // 이 로직은 보통 '리스트 페이지'의 추가 버튼에서 resetDraft()를 부르고 오는 게 더 깔끔합니다!
-});
+onMounted(() => {});
 
-// 아이콘 선택 페이지로 이동 (더 이상 query를 주렁주렁 달지 않습니다!)
 const goToIconSelect = () => {
   router.push({ name: 'categoryicon' });
 };
 
-// 뒤로 가기 처리
 const handleBack = () => {
-  categoryStore.resetDraft(); // 취소하고 나갈 때는 서랍을 비워줍니다.
+  categoryStore.resetDraft();
   router.back();
 };
 
-// 1. 중복 확인 로직 (Store의 데이터를 기준으로 검사)
 const checkAndSubmit = async () => {
   const { name, type } = categoryStore.draft;
 
@@ -98,11 +89,11 @@ const checkAndSubmit = async () => {
   }
 
   try {
-    const response = await axios.get('/api/categories', {
-      params: { userId: userStore.getCurrentUser().id },
-    });
+    // 💡 혹시 모르니 가장 최신 목록으로 한번 갱신해주고
+    await categoryStore.fetchCategoryList();
 
-    const isDuplicate = response.data.some((cat) => {
+    // 💡 스토어에 있는 배열(categoryList)을 검사합니다! (속도 향상)
+    const isDuplicate = categoryStore.categoryList.some((cat) => {
       return cat.name === name && cat.type === type;
     });
 
@@ -111,25 +102,19 @@ const checkAndSubmit = async () => {
       return;
     }
 
-    // 중복 통과 시 저장 실행
     await submitCategory();
   } catch (error) {
     console.error('중복 검사 에러:', error);
   }
 };
 
-// 2. 진짜 저장 로직 (Store의 Action을 호출!)
 const submitCategory = async () => {
   try {
-    const userId = userStore.getCurrentUser().id;
-
-    // ✨ 피니아 스토어에 미리 만들어둔 saveCategory 액션을 호출합니다!
-    await categoryStore.saveCategory(userId);
-
+    // 💡 괄호 안에 아무것도 안 넣어도 됩니다!
+    await categoryStore.saveCategory();
     alert('카테고리가 성공적으로 추가되었습니다!');
-    router.back(); // 카테고리 홈으로 복귀
+    router.back();
   } catch (err) {
-    console.error('추가 실패:', err);
     alert('저장 중 오류가 발생했습니다.');
   }
 };
