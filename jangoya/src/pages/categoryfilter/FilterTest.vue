@@ -14,6 +14,25 @@
       <button @click="goToFilterPage">필터 설정 페이지로 이동하기</button>
     </div>
   </div>
+
+  <div class="row">
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <div class="header" v-if="filterBudgets.length <= 0">
+            지출 내역이 없어요.
+          </div>
+          <ul class="list-group" style="background-color: aqua">
+            <TrasctionItem
+              v-for="budgetItem in filterBudgets"
+              :key="budgetItem.id"
+              :budgetItem="budgetItem"
+            ></TrasctionItem>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -22,6 +41,16 @@ import { useFilterStore } from '@/stores/filterStore'; // ✨ 피니아 추가
 
 const router = useRouter();
 const filterStore = useFilterStore(); // ✨ 스토어 활성화
+
+//budget을 불러옵니다.
+import { useBudgetStore } from '@/stores/dateStore';
+import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
+import TrasctionItem from '@/components/TrasctionItem.vue';
+const budgetStore = useBudgetStore();
+const { categoryFilterBudgets } = budgetStore;
+
+const filterBudgets = categoryFilterBudgets(2);
 
 const goToFilterPage = () => {
   // 라우터 설정에 등록된 필터 페이지 주소로 이동

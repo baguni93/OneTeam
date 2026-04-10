@@ -49,6 +49,13 @@
         >
           취 소
         </button>
+        <button
+          type="button"
+          class="btn btn-primary m-1"
+          @click="deleteBudgetHandler"
+        >
+          삭제
+        </button>
       </div>
     </div>
   </div>
@@ -57,49 +64,61 @@
 </template>
 
 <script setup>
-//날짜 변경
-//카테고리 모달
-//카테고리 변경
-
-import { inject, reactive, computed, watch } from 'vue';
+import { reactive, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { useBudgetStore } from '@/stores/dateStore';
+import { storeToRefs } from 'pinia';
 
-const budgets = inject('budgets');
-const { updateBudget } = inject('actions');
+const budgetStore = useBudgetStore();
+const { budgets, categories } = storeToRefs(budgetStore);
+const { updateBudget, deleteBudget } = budgetStore;
+
 const router = useRouter();
 const currentRoute = useRoute();
 
-const matchedBudgetsItem = budgets.value.find(
-  (item) => item.id === currentRoute.params.id,
+const matchedBudgetsItem = computed(() => {
+  return budgets.value.find(
+    (item) => item.id === Number(currentRoute.params.id),
+  );
+});
+
+watch(
+  matchedBudgetsItem,
+  (item) => {
+    if (!item) {
+      router.push('/');
+    }
+  },
+  { immediate: true },
 );
 
-console.log(matchedBudgetsItem.type);
-
-if (!matchedBudgetsItem) {
-  router.push('/');
-}
-let categories = inject('categories');
-
-const budgetItem = reactive({ ...matchedBudgetsItem });
+const budgetItem = reactive({ ...matchedBudgetsItem.value });
 
 watch(
   () => currentRoute.query.categoryId,
   (newId) => {
     if (newId) {
-      budgetItem.categoryId = newId;
+      budgetItem.categoryId = Number(newId);
     }
   },
   { immediate: true },
 );
+
 const categoryItem = computed(() => {
   return categories.value.find((x) => x.id === budgetItem.categoryId);
 });
 
 const editType =
-  matchedBudgetsItem.type === 'income' ? '입금 영수승' : '지출 영수증';
+  budgetItem.type === 'income' ? '수입 내역 수정 ' : '지출 내역 수정';
 
 const updateBudgetHandler = () => {
   updateBudget({ ...budgetItem }, () => {
+    router.push('/');
+  });
+};
+
+const deleteBudgetHandler = () => {
+  deleteBudget(budgetItem.id, () => {
     router.push('/');
   });
 };
