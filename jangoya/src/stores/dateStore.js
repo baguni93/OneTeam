@@ -158,11 +158,16 @@ export const useBudgetStore = defineStore('budgets', () => {
     }
   };
 
+  const categoryFilterBudgets = (categoryId) => {
+    return state.budgets.filter((x) => x.categoryId === String(2));
+  };
+
   return {
     ...toRefs(state),
     fetchBudget,
     addBudget,
     updateBudget,
     deleteBudget,
+    categoryFilterBudgets,
   };
 });

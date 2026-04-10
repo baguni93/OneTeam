@@ -9,30 +9,13 @@
   ],
   "budgets": [
     {
-      "date": "Fri Apr 10 2026",
-      "type": "expense",
-      "categoryId": "5",
-      "amount": 0,
-      "memo": "",
-      "userId": "1",
-      "id": 5
-    },
-    {
-      "id": 6,
       "date": "2026-04-10",
       "type": "income",
       "categoryId": "2",
-      "amount": 0,
-      "memo": "ㄴㅇㅁㅇㅁ"
-    },
-    {
-      "date": "2026-04-10",
-      "type": "income",
-      "categoryId": "2",
-      "amount": 0,
+      "amount": 10000,
       "memo": "",
       "userId": "1",
-      "id": 7
+      "id": 1
     }
   ],
   "categories": [
@@ -77,5 +60,26 @@
       "icon": "주소"
     }
   ],
-  "budget_plans": []
+  "budget_plans": [
+    {
+      "userId": "1",
+      "month": "2026-04",
+      "total_budget": 10000,
+      "category_budgets": [
+        {
+          "categoryId": "1",
+          "amount": 123
+        },
+        {
+          "categoryId": "2",
+          "amount": 1231
+        },
+        {
+          "categoryId": "3",
+          "amount": 123
+        }
+      ],
+      "id": 1
+    }
+  ]
 }

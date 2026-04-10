@@ -32,6 +32,10 @@
     </div>
 
     <div class="d-flex justify-content-end mb-3">
+      <router-link class="btn btn-primary" to="search"> + 검색 </router-link>
+      <router-link class="btn btn-primary" to="category/filter">
+        + 필터
+      </router-link>
       <router-link class="btn btn-primary" to="transction/add">
         + 추가
       </router-link>

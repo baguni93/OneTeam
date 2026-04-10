@@ -14,28 +14,14 @@
               메인
             </router-link>
           </li>
-
-          <li class="nav-item">
-            <router-link class="nav-link" :to="{ name: 'mypage' }">
-              마이페이지
-            </router-link>
-          </li>
-
           <li class="nav-item">
             <router-link class="nav-link" :to="{ name: 'budget' }">
               예산설정
             </router-link>
           </li>
-
           <li class="nav-item">
-            <router-link class="nav-link" :to="{ name: 'search' }">
-              검색
-            </router-link>
-          </li>
-
-          <li class="nav-item">
-            <router-link class="nav-link" :to="{ name: 'mypage/category' }">
-              카테고리
+            <router-link class="nav-link" :to="{ name: 'mypage' }">
+              마이페이지
             </router-link>
           </li>
         </ul>
