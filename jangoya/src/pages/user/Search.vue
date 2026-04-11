@@ -113,9 +113,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue'; //  onMounted 여기로 통합
 import axios from 'axios';
-import { onMounted } from 'vue';
 // 로그인 한 사용자 불러오기 (민성님)
 import { useUserStore } from '@/stores/userStore';
 const userStore = useUserStore();
@@ -126,10 +125,10 @@ const currentUser = userStore.getCurrentUser();
 // 1.기간
 // ======================
 
-const selectedPeriod = ref('all'); // 현재 선택된 기간 저장
-const customDate = ref(''); // "기간: 사용자지정" 과 연결
+const selectedPeriod = ref('all');
+const customDate = ref('');
 
-// 날짜를 "2026.04.08" 형식으로 변환하는 함수
+// 날짜 형식 변환하는 함수 (y-m-d)
 const formatDate = (date) => {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -141,26 +140,24 @@ const formatDate = (date) => {
 const monthRange = computed(() => {
   const month = [];
   const today = new Date();
-  const start = new Date(today.getFullYear(), today.getMonth(), 1); // 이번 달 "1일"
-
-  // 1일부터 오늘까지 하루씩 배열에 추가
+  const start = new Date(today.getFullYear(), today.getMonth(), 1); //이번 달 "1"일
+  // 1일부터 오늘까지 하루씩 배열에 저장
   const current = new Date(start);
   while (current <= today) {
     month.push(formatDate(current));
-    current.setDate(current.getDate() + 1); // 하루씩 증가
+    current.setDate(current.getDate() + 1);
   }
   console.log(`${month[month.length - 1]} ~ ${month[0]}`);
   return month;
 });
 
-// 이번 주 범위 자동 계산
+// 이번 주 범위 자동
 const weekRange = computed(() => {
   const week = [];
   const today = new Date();
-  const oneDay = 24 * 60 * 60 * 1000; // 하루를 밀리초로
-
+  const oneDay = 24 * 60 * 60 * 1000; //하루를 밀리초로
   for (let i = 0; i < 7; i++) {
-    const newDay = new Date(today.getTime() - i * oneDay); // i일 전 날짜
+    const newDay = new Date(today.getTime() - i * oneDay);
     week.push(formatDate(newDay));
   }
   console.log(`${week[6]} ~ ${week[0]}`);
@@ -174,12 +171,14 @@ const weekRange = computed(() => {
 
 const showCategoryTab = ref(false); // 카테고리 탭 열고 닫는 상태
 const openType = ref([]); // 수입,지출 열림 상태
+//**도현님 코드 불러오기 */
 const selectedCategories = ref([]); //사용자가 선택한 카테고리 id 목록
 const categories = ref([]); // db.json에서 불러온 전체 카테고리 목록
-// onMounted(async () => {
-//   const res = await axios.get('http://localhost:3000/categories');
-//   categories.value = res.data; // 불러온 데이터 categories 에 저장
-// });
+onMounted(async () => {
+  const res = await axios.get('http://localhost:3000/categories');
+  categories.value = res.data; // 불러온 데이터 categories 에 저장
+});
+
 // (토글 함수, 수입/지출) type : income, expense
 const toggleType = (type) => {
   const idx = openType.value.indexOf(type);
@@ -197,9 +196,7 @@ const toggleCategory = (id) => {
 // selectedCategories 가 바뀔 때마다 자동으로 계산
 const selectedCategoriesLabels = computed(() => {
   return selectedCategories.value.map((id) => {
-    // id로 카테고리 객체 찾기
     const cat = categories.value.find((c) => c.id === id);
-    // type에 따라 '수입', '지출' 붙여서 return
     return cat
       ? `${cat.type === 'income' ? '수입' : '지출'} - ${cat.name}`
       : '';
@@ -210,34 +207,39 @@ const getCategoryName = (categoryId) => {
   const cat = categories.value.find((c) => c.id === categoryId);
   return cat ? cat.name : categoryId;
 };
+
 // ======================
 // 3. 금액
 // ======================
 
-const minAmount = ref(''); //사용자가 입력한 최솟값
+const minAmount = ref('');
 const maxAmount = ref('');
 
 // ======================
 // 4. 검색어 (keyword)
 // ======================
+
 const keyword = ref(''); // 사용자가 입력한 검색어
 const results = ref([]); // 검색 결과 저장
 
 // ======================
-// API 연결 :  search 함수
+// API 연결 : search 함수
 // ======================
 
 const search = async () => {
-  results.value = []; // 검색 시작 전, 초기화
+  results.value = []; //검색 시작 전, 초기화
 
-  // json-server에서 전체 데이터 가져오기
-  const res = await axios.get('http://localhost:3000/budgets');
+  // userId 필터 추가
+  const res = await axios.get('http://localhost:3000/budgets', {
+    params: { userId: currentUser?.id },
+  });
   let data = res.data;
   console.log(data.length);
   console.log(data);
-  data = data.filter((item) => String(item.userId) === String(currentUser?.id)); // 현재 로그인한 유저 데이터만 필터링
+  // ** test 해보고, 삭제
+  // data = data.filter((item) => String(item.userId) === String(currentUser?.id)); // 현재 로그인한 유저 데이터만 필터링
 
-  // 기간 필터 (선택했을 때만 적용)
+  // 기간 필터
   if (selectedPeriod.value === 'week') {
     data = data.filter((item) => weekRange.value.includes(item.date));
   } else if (selectedPeriod.value === 'month') {
@@ -245,15 +247,13 @@ const search = async () => {
   } else if (selectedPeriod.value === 'custom' && customDate.value) {
     data = data.filter((item) => item.date === customDate.value);
   }
-
-  // 카테고리 필터 (선택했을 때만 적용)
+  // 카테고리 필터
   if (selectedCategories.value.length > 0) {
     data = data.filter((item) =>
       selectedCategories.value.includes(item.categoryId),
     );
   }
-
-  // 금액  필터 (입력했을 때만 적용)
+  // 금액 필터
   if (minAmount.value) {
     data = data.filter((item) => item.amount >= Number(minAmount.value));
   }
@@ -261,7 +261,7 @@ const search = async () => {
     data = data.filter((item) => item.amount <= Number(maxAmount.value));
   }
 
-  // 검색어 필터 (입력했을 때만 적용)
+  // 검색어 필터
   if (keyword.value) {
     data = data.filter(
       (item) =>

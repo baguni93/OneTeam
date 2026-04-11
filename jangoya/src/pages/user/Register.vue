@@ -1,59 +1,117 @@
 <template>
-  <div>
-    <h1>회원가입</h1>
-
-    <div>
-      <label>이름</label><br />
-      <input type="text" placeholder="이름을 입력해 주세요" v-model="name" />
+  <div class="container mt-4" style="max-width: 480px; margin: 0 auto">
+    <!-- 타이틀 -->
+    <div class="text-center mb-4">
+      <div style="font-size: 50px">🐷</div>
+      <h1 class="fw-bold">회원가입</h1>
     </div>
 
-    <div>
-      <label>아이디</label><br />
-      <input
-        type="text"
-        placeholder="아이디를 입력해 주세요"
-        v-model="userId"
-      />
-    </div>
-
-    <div>
-      <label>이메일</label><br />
-      <input
-        type="email"
-        placeholder="이메일을 입력해 주세요 (예: hong@test.com)"
-        v-model="email"
-      />
-    </div>
-
-    <div>
-      <label>비밀번호</label><br />
-      <div>
+    <!-- 카드 -->
+    <div class="card p-4 shadow-sm mb-4" style="border-radius: 20px">
+      <!-- 이름 -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold">이름</label>
         <input
-          :type="showPassword ? 'text' : 'password'"
-          placeholder="비밀번호를 입력해 주세요"
-          v-model="password"
+          type="text"
+          class="form-control"
+          placeholder="이름을 입력해 주세요"
+          v-model="name"
+          style="border-radius: 12px"
         />
-        <button @click="showPassword = !showPassword">👁</button>
+      </div>
+
+      <!-- 아이디 -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold">아이디</label>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="아이디를 입력해 주세요"
+          v-model="userId"
+          style="border-radius: 12px"
+        />
+      </div>
+
+      <!-- 이메일 -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold">이메일</label>
+        <input
+          type="email"
+          class="form-control"
+          placeholder="이메일을 입력해 주세요 (예: hong@test.com)"
+          v-model="email"
+          style="border-radius: 12px"
+        />
+      </div>
+
+      <!-- 비밀번호 -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold">비밀번호</label>
+        <div class="input-group">
+          <input
+            :type="showPassword ? 'text' : 'password'"
+            class="form-control"
+            placeholder="비밀번호를 입력해 주세요"
+            v-model="password"
+            style="border-radius: 12px 0 0 12px"
+          />
+          <button
+            class="btn btn-outline-secondary"
+            @click="showPassword = !showPassword"
+            style="border-radius: 0 12px 12px 0"
+          >
+            👁
+          </button>
+        </div>
+      </div>
+
+      <!-- 비밀번호 확인 -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold">비밀번호 확인</label>
+        <div class="input-group">
+          <input
+            :type="showPasswordConfirm ? 'text' : 'password'"
+            class="form-control"
+            placeholder="비밀번호를 다시 입력해 주세요"
+            v-model="passwordConfirm"
+            style="border-radius: 12px 0 0 12px"
+          />
+          <button
+            class="btn btn-outline-secondary"
+            @click="showPasswordConfirm = !showPasswordConfirm"
+            style="border-radius: 0 12px 12px 0"
+          >
+            👁
+          </button>
+        </div>
+      </div>
+
+      <!-- 에러/성공 메시지 -->
+      <p v-if="errorMsg" class="text-danger text-center small">
+        {{ errorMsg }}
+      </p>
+      <p v-if="successMsg" class="text-success text-center small">
+        {{ successMsg }}
+      </p>
+
+      <!-- 버튼들 -->
+      <div class="d-grid gap-2">
+        <button
+          class="btn btn-primary fw-bold"
+          @click="register"
+          style="border-radius: 12px; padding: 10px"
+        >
+          👋 가입하기
+        </button>
+        <button
+          class="btn btn-outline-secondary"
+          @click="router.push('/user/login')"
+          style="border-radius: 12px; padding: 10px"
+        >
+          🔑 로그인으로 돌아가기
+        </button>
       </div>
     </div>
-
-    <div>
-      <label>비밀번호 확인</label><br />
-      <div>
-        <input
-          :type="showPasswordConfirm ? 'text' : 'password'"
-          placeholder="비밀번호를 다시 입력해 주세요"
-          v-model="passwordConfirm"
-        />
-        <button @click="showPasswordConfirm = !showPasswordConfirm">👁</button>
-      </div>
-    </div>
-
-    <p v-if="errorMsg" style="color: red">{{ errorMsg }}</p>
-    <p v-if="successMsg" style="color: green">{{ successMsg }}</p>
-
-    <button @click="register">가입하기</button>
-    <button @click="router.push('/user/login')">로그인으로 돌아가기</button>
   </div>
 </template>
 
