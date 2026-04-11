@@ -1,40 +1,63 @@
 <template>
-  <div>여기는 {{ type }} 카테고리 선택 페이지입니다.</div>
-  <div>{{ amount }}</div>
-
-  <ul class="list-group">
-    <li
-      v-for="categoryItem in categoryItems"
-      :key="categoryItem.id"
-      @click="addBudgetHandler(categoryItem.id)"
-    >
-      <div style="background-color: blue">
-        카테고리 Id : {{ categoryItem.id }} / 카테고리 이름 :
-        {{ categoryItem.name }} 카테고리 타입 : {{ categoryItem.type }}
+  <div class="container mt-4">
+    <!-- 헤더 -->
+    <div class="text-center mb-4">
+      <h4>카테고리 선택</h4>
+      <div class="text-muted">
+        {{ type === 'income' ? '💰 수입' : '💸 지출' }} / {{ amount }}원
       </div>
-      <br />
-    </li>
-  </ul>
+    </div>
 
-  <div class="form-group">
-    <button
-      type="button"
-      class="btn btn-primary m-1"
-      @click="
-        // router.push({
-        //   path: '/transction/add',
-        //   state: {
-        //     amount: amount,
-        //   },
-        // })
-        router.back()
-      "
-    >
-      뒤로가기
-    </button>
-    <button type="button" class="btn btn-primary m-1" @click="router.push('/')">
-      취 소
-    </button>
+    <!-- 카테고리 리스트 -->
+    <div class="row">
+      <div
+        class="col-md-6 mb-2"
+        v-for="categoryItem in categoryItems"
+        :key="categoryItem.id"
+      >
+        <div
+          class="card category-card shadow-sm border-0"
+          @click="addBudgetHandler(categoryItem.id)"
+        >
+          <div
+            class="card-body d-flex justify-content-between align-items-center"
+          >
+            <div>
+              <div class="fw-bold">
+                {{ categoryItem.name }}
+              </div>
+              <small class="text-muted"> ID: {{ categoryItem.id }} </small>
+            </div>
+
+            <span
+              class="badge"
+              :class="type === 'income' ? 'bg-success' : 'bg-danger'"
+            >
+              {{ categoryItem.type }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 버튼 -->
+    <div class="d-flex justify-content-between mt-4">
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        @click="router.back()"
+      >
+        ← 뒤로가기
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-outline-danger"
+        @click="router.push('/')"
+      >
+        취소
+      </button>
+    </div>
   </div>
 </template>
 
@@ -68,3 +91,25 @@ const addBudgetHandler = (categoryItemId) => {
   });
 };
 </script>
+
+<style scoped>
+/* ===== 카드 hover 핵심 ===== */
+.category-card {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 12px;
+}
+
+/* hover 효과 */
+.category-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  background-color: #f8f9fa;
+}
+
+/* 클릭 느낌 */
+.category-card:active {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
+}
+</style>

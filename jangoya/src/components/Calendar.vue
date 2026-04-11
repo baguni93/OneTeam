@@ -34,20 +34,28 @@
       </div>
     </div>
 
-    <!-- 입력
+    입력
     <div class="input-area">
       <input v-model="inputText" placeholder="내용 입력" />
       <button @click="addItem">추가</button>
-    </div> -->
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
-import { useDateStore } from '@/stores/dateStore';
+import { useBudgetStore, useDateStore } from '@/stores/dateStore';
 import { storeToRefs } from 'pinia';
+
 const dateStore = useDateStore();
 const { selectedDate } = storeToRefs(dateStore);
+
+const budgetStore = useBudgetStore();
+const { budgets } = storeToRefs(budgetStore);
+const test = computed(() => {
+  const incomeBudget = budgets.value.filter((x) => x.type === 'income');
+  const expenseBudget = budgets.value.filter((x) => x.type === 'expense');
+});
 
 const selectDate = (day) => {
   if (!day?.date) return;
@@ -103,16 +111,16 @@ const calendarDays = computed(() => {
 /**
  * 아이템 추가
  */
-// const addItem = () => {
-//   if (!selectedDate.value || !inputText.value) return;
+const addItem = () => {
+  if (!selectedDate.value || !inputText.value) return;
 
-//   if (!itemsByDate.value[selectedDate.value]) {
-//     itemsByDate.value[selectedDate.value] = [];
-//   }
+  if (!itemsByDate.value[selectedDate.value]) {
+    itemsByDate.value[selectedDate.value] = [];
+  }
 
-//   itemsByDate.value[selectedDate.value].push(inputText.value);
-//   inputText.value = '';
-// };
+  itemsByDate.value[selectedDate.value].push(inputText.value);
+  inputText.value = '';
+};
 
 /**
  * 날짜별 아이템 조회
