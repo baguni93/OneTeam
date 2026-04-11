@@ -14,15 +14,15 @@
           <p class="budget-label">이번 달 예산</p>
           <p class="budget-amount">{{ budget?.total_budget?.toLocaleString() }}원</p>
           <div class="progress-bg">
-            <div class="progress-fill" :style="{ width: Math.min((totalCategoryBudget / budget.total_budget) * 100, 100) + '%' }"></div>
+            <div class="progress-fill" :style="{ width: Math.min((totalUsed / budget.total_budget) * 100, 100) + '%' }"></div>
           </div>
-          <p class="budget-sub">{{ totalCategoryBudget.toLocaleString() }} / {{ budget?.total_budget?.toLocaleString() }}원 사용</p>
+          <p class="budget-sub">{{ totalUsed.toLocaleString() }} / {{ budget?.total_budget?.toLocaleString() }}원 사용</p>
         </div>
   
         <div class="remain-card">
-          <p class="remain-label">남은 예산</p>
-          <p class="remain-amount">{{ remainingBudget.toLocaleString() }}원 ✨</p>
-          <p class="remain-sub">카테고리 합계 {{ totalCategoryBudget.toLocaleString() }}원</p>
+          <p class="remain-label">오늘 쓸 수 있는 돈</p>
+          <p class="remain-amount">{{ todayBudget.toLocaleString() }}원 ✨</p>
+          <p class="remain-sub">남은 예산 {{ remainingBudget.toLocaleString() }}원</p>
         </div>
   
         <div class="card">
@@ -32,7 +32,12 @@
               <div class="cat-dot" :style="{ background: getCategoryColor(item.categoryId) }"></div>
               {{ getCategoryName(item.categoryId) }}
             </div>
-            <span class="cat-amount">{{ item?.amount?.toLocaleString() }}원</span>
+            <div style="text-align: right;">
+                <div class="cat-amount">{{ item?.amount?.toLocaleString() }}원</div>
+                <div style="font-size: 12px; color: #888;">
+                    사용 {{ getCategoryUsed(item.categoryId).toLocaleString() }}원
+                </div>
+            </div>
           </div>
         </div>
   
@@ -48,6 +53,9 @@ import {useRouter} from 'vue-router';
 import { useBudgetPlanStore} from '@/stores/budgetPlan';
 import { useUserStore } from '@/stores/userStore';
 import {useCategoryStore} from '@/stores/categoryStore';
+import { useBudgetStore } from '@/stores/dateStore';
+
+const budgetStore = useBudgetStore();
 
 const categoryStore = useCategoryStore();
 
@@ -74,9 +82,30 @@ const getCategoryColor = (categoryId) => {
     const cat = categoryStore.categoryList.find(c => c.id === categoryId);
     return cat ? cat.color : '#888';
 }
+const getCategoryUsed = (categoryId) => {
+    if(!budgetStore.budgets) return 0;
+    return budgetStore.budgets
+    .filter(b => b.categoryId === categoryId &&
+        b.type === 'expense' &&
+        b.date.startsWith(selectedMonth.value)
+    )
+    .reduce((sum, b)=> sum + Number(b.amount), 0);
+}
+const totalUsed = computed(()=> {
+    if(!budget.value) return 0;
+    return budget.value.category_budgets.reduce((sum, item)=> {
+        return sum + getCategoryUsed(item.categoryId);
+    }, 0);
+});
+const todayBudget = computed(()=> {
+    if(!budget.value) return 0;
+    const remainDays = new Date(new Date().getFullYear(), new Date().getMonth()+ 1,0).getDate() - new Date().getDate() + 1;
+    return Math.round((budget.value.total_budget - totalUsed.value) / remainDays);
+});
 
 onMounted(async()=> {
     await categoryStore.fetchCategoryList();
+    await budgetStore.fetchBudget();
     fetchBudget();
 });
 
