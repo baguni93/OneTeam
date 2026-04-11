@@ -10,7 +10,7 @@
             <input type="number" v-model="form.total_budget" placeholder="총 예산을 입력해주세요:)"/>
         </div>
         <h3>카테고리별 예산 설정 🗂️</h3>
-        <div v-for="cat in budgetPlanStore.categories" :key="cat.id">
+        <div v-for="cat in categoryStore.categoryList" :key="cat.id">
             <label>{{ cat.name }}</label>
             <input 
             type="number"
@@ -27,6 +27,9 @@ import {ref, reactive, onMounted} from 'vue';
 import {useRouter} from 'vue-router';
 import {useBudgetPlanStore} from '@/stores/budgetPlan';
 import { useUserStore } from '@/stores/userStore';
+import {useCategoryStore} from '@/stores/categoryStore';
+
+const categoryStore = useCategoryStore();
 
 const userStore = useUserStore()
 const currentUser = userStore.getCurrentUser()
@@ -75,7 +78,7 @@ await budgetPlanStore.addBudget({
 router.push('/budget');
 };
 
-onMounted(()=> {
-    budgetPlanStore.fetchCategories();
+onMounted(async()=> {
+    await categoryStore.fetchCategoryList();
 });
 </script>

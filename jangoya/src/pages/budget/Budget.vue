@@ -32,6 +32,9 @@ import { ref, onMounted, computed} from 'vue';
 import {useRouter} from 'vue-router';
 import { useBudgetPlanStore} from '@/stores/budgetPlan';
 import { useUserStore } from '@/stores/userStore';
+import {useCategoryStore} from '@/stores/categoryStore';
+
+const categoryStore = useCategoryStore();
 
 const userStore = useUserStore();
 const currentUser = userStore.getCurrentUser()
@@ -41,7 +44,6 @@ const budgetPlanStore = useBudgetPlanStore();
 
 const selectedMonth = ref(new Date().toISOString().slice(0,7));
 const budget = ref(null);
-const categories = ref([]);
 
 const fetchBudget = async() => {
     await budgetPlanStore.fetchBudgetPlan({userId: currentUser.id, month: selectedMonth.value});
@@ -49,11 +51,12 @@ const fetchBudget = async() => {
 };
 
 const getCategoryName = (categoryId) => {
-    const cat = budgetPlanStore.categories.find(c => c.id === categoryId);
+    const cat = categoryStore.categoryList.find(c => c.id === categoryId);
     return cat ? cat.name : '알 수 없는 카테고리';
 };
 
-onMounted(()=> {
+onMounted(async()=> {
+    await categoryStore.fetchCategoryList();
     fetchBudget();
 });
 

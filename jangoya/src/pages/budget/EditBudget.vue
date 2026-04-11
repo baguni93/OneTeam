@@ -8,7 +8,7 @@
         </div>
 
         <h3>카테고리별 예산 수정</h3>
-        <div v-for="cat in budgetPlanStore.categories" :key="cat.id">
+        <div v-for="cat in categoryStore.categoryList" :key="cat.id">
             <label>{{ cat.name }}</label>
             <input 
             type="number"
@@ -25,6 +25,9 @@ import {reactive, onMounted} from 'vue';
 import {useRouter, useRoute} from 'vue-router';
 import {useBudgetPlanStore} from '@/stores/budgetPlan';
 import { useUserStore } from '@/stores/userStore';
+import {useCategoryStore} from '@/stores/categoryStore';
+
+const categoryStore = useCategoryStore();
 
 const userStore = useUserStore()
 const currentUser = userStore.getCurrentUser()
@@ -58,6 +61,7 @@ const handleUpdate = async() => {
 };
 
 onMounted(async()=> {
+    await categoryStore.fetchCategoryList();
     await budgetPlanStore.fetchCategories();
     await budgetPlanStore.fetchBudgetPlan({ userId: currentUser.id, month: new Date().toISOString().slice(0,7)});
 
