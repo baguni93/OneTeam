@@ -60,26 +60,5 @@
       "icon": "주소"
     }
   ],
-  "budget_plans": [
-    {
-      "userId": "1",
-      "month": "2026-04",
-      "total_budget": 10000,
-      "category_budgets": [
-        {
-          "categoryId": "1",
-          "amount": 123
-        },
-        {
-          "categoryId": "2",
-          "amount": 1231
-        },
-        {
-          "categoryId": "3",
-          "amount": 123
-        }
-      ],
-      "id": 1
-    }
-  ]
+  "budget_plans": []
 }
