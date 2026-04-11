@@ -115,9 +115,11 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'; //  onMounted 여기로 통합
 import axios from 'axios';
-import { useUserStore } from '@/stores/userStore'; //  추가
-
-const userStore = useUserStore(); //  추가
+// 로그인 한 사용자 불러오기 (민성님)
+import { useUserStore } from '@/stores/userStore';
+const userStore = useUserStore();
+userStore.initUser(); // 민성님 코드에서 이것만 추가함 !
+const currentUser = userStore.getCurrentUser();
 
 // ======================
 // 1.기간
@@ -126,6 +128,7 @@ const userStore = useUserStore(); //  추가
 const selectedPeriod = ref('all');
 const customDate = ref('');
 
+// 날짜 형식 변환하는 함수 (y-m-d)
 const formatDate = (date) => {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -136,7 +139,8 @@ const formatDate = (date) => {
 const monthRange = computed(() => {
   const month = [];
   const today = new Date();
-  const start = new Date(today.getFullYear(), today.getMonth(), 1);
+  const start = new Date(today.getFullYear(), today.getMonth(), 1); //이번 달 "1"일
+  // 1일부터 오늘까지 하루씩 배열에 저장
   const current = new Date(start);
   while (current <= today) {
     month.push(formatDate(current));
@@ -145,10 +149,11 @@ const monthRange = computed(() => {
   return month;
 });
 
+// 이번 주 범위 자동
 const weekRange = computed(() => {
   const week = [];
   const today = new Date();
-  const oneDay = 24 * 60 * 60 * 1000;
+  const oneDay = 24 * 60 * 60 * 1000; //하루를 밀리초로
   for (let i = 0; i < 7; i++) {
     const newDay = new Date(today.getTime() - i * oneDay);
     week.push(formatDate(newDay));
@@ -160,10 +165,17 @@ const weekRange = computed(() => {
 // 2. 카테고리
 // ======================
 
-const showCategoryTab = ref(false);
-const openType = ref([]);
-const selectedCategories = ref([]);
+const showCategoryTab = ref(false); // 카테고리 탭 열고 닫는 상태
+const openType = ref([]); // 수입,지출 열림 상태
+//**도현님 코드 불러오기 */
+const selectedCategories = ref([]); //사용자가 선택한 카테고리 id 목록
+const categories = ref([]); // db.json에서 불러온 전체 카테고리 목록
+onMounted(async () => {
+  const res = await axios.get('http://localhost:3000/categories');
+  categories.value = res.data; // 불러온 데이터 categories 에 저장
+});
 
+// (토글 함수, 수입/지출) type : income, expense
 const toggleType = (type) => {
   const idx = openType.value.indexOf(type);
   if (idx === -1) openType.value.push(type);
@@ -185,17 +197,6 @@ const selectedCategoriesLabels = computed(() => {
   });
 });
 
-const categories = ref([]);
-
-// 주석 풀고 userId 필터 추가
-onMounted(async () => {
-  const currentUser = userStore.getCurrentUser()
-  const res = await axios.get('/api/categories', {
-    params: { userId: currentUser.id }
-  })
-  categories.value = res.data
-})
-
 const getCategoryName = (categoryId) => {
   const cat = categories.value.find((c) => c.id === categoryId);
   return cat ? cat.name : categoryId;
@@ -212,23 +213,27 @@ const maxAmount = ref('');
 // 4. 검색어 (keyword)
 // ======================
 
-const keyword = ref('');
-const results = ref([]);
+const keyword = ref(''); // 사용자가 입력한 검색어
+const results = ref([]); // 검색 결과 저장
 
 // ======================
 // API 연결 : search 함수
 // ======================
 
 const search = async () => {
-  results.value = [];
+  results.value = []; //검색 시작 전, 초기화
 
   // userId 필터 추가
-  const currentUser = userStore.getCurrentUser()
-  const res = await axios.get('/api/budgets', {
-    params: { userId: currentUser.id }
-  })
+  const res = await axios.get('http://localhost:3000/budgets', {
+    params: { userId: currentUser?.id },
+  });
   let data = res.data;
+  console.log(data.length);
+  console.log(data);
+  // ** test 해보고, 삭제
+  // data = data.filter((item) => String(item.userId) === String(currentUser?.id)); // 현재 로그인한 유저 데이터만 필터링
 
+  // 기간 필터
   if (selectedPeriod.value === 'week') {
     data = data.filter((item) => weekRange.value.includes(item.date));
   } else if (selectedPeriod.value === 'month') {
@@ -236,13 +241,12 @@ const search = async () => {
   } else if (selectedPeriod.value === 'custom' && customDate.value) {
     data = data.filter((item) => item.date === customDate.value);
   }
-
+  // 카테고리 필터
   if (selectedCategories.value.length > 0) {
     data = data.filter((item) =>
       selectedCategories.value.includes(item.categoryId),
     );
   }
-
   if (minAmount.value) {
     data = data.filter((item) => item.amount >= Number(minAmount.value));
   }
@@ -250,12 +254,13 @@ const search = async () => {
     data = data.filter((item) => item.amount <= Number(maxAmount.value));
   }
 
+  // 검색어 필터
   if (keyword.value) {
     data = data.filter(
       (item) =>
         String(item.amount).includes(keyword.value) ||
-        item.memo.includes(keyword.value),
-    );
+        (item.memo ?? '').includes(keyword.value),
+    ); // amount 와 memo 에서 일치하는 값 찾기
   }
   results.value = data;
 };
