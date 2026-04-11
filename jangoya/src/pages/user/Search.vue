@@ -113,17 +113,19 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue'; //  onMounted 여기로 통합
 import axios from 'axios';
-import { onMounted } from 'vue';
+import { useUserStore } from '@/stores/userStore'; //  추가
+
+const userStore = useUserStore(); //  추가
+
 // ======================
 // 1.기간
 // ======================
 
-const selectedPeriod = ref('all'); // 현재 선택된 기간 저장
-const customDate = ref(''); // "기간: 사용자지정" 과 연결
+const selectedPeriod = ref('all');
+const customDate = ref('');
 
-// 날짜를 "2026.04.08" 형식으로 변환하는 함수
 const formatDate = (date) => {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -131,34 +133,26 @@ const formatDate = (date) => {
   return `${y}-${m}-${d}`;
 };
 
-// 이번 달 범위 자동
 const monthRange = computed(() => {
   const month = [];
   const today = new Date();
-  const start = new Date(today.getFullYear(), today.getMonth(), 1); // 이번 달 "1일"
-
-  // 1일부터 오늘까지 하루씩 배열에 추가
+  const start = new Date(today.getFullYear(), today.getMonth(), 1);
   const current = new Date(start);
   while (current <= today) {
     month.push(formatDate(current));
-    current.setDate(current.getDate() + 1); // 하루씩 증가
+    current.setDate(current.getDate() + 1);
   }
-  console.log(`${month[month.length - 1]} ~ ${month[0]}`);
   return month;
 });
 
-// 이번 주 범위 자동 계산
 const weekRange = computed(() => {
   const week = [];
   const today = new Date();
-  const oneDay = 24 * 60 * 60 * 1000; // 하루를 밀리초로
-
+  const oneDay = 24 * 60 * 60 * 1000;
   for (let i = 0; i < 7; i++) {
-    const newDay = new Date(today.getTime() - i * oneDay); // i일 전 날짜
+    const newDay = new Date(today.getTime() - i * oneDay);
     week.push(formatDate(newDay));
   }
-  console.log(`${week[6]} ~ ${week[0]}`);
-
   return week;
 });
 
@@ -166,73 +160,75 @@ const weekRange = computed(() => {
 // 2. 카테고리
 // ======================
 
-const showCategoryTab = ref(false); // 카테고리 탭 열고 닫는 상태
-const openType = ref([]); // 수입,지출 열림 상태
-const selectedCategories = ref([]); //사용자가 선택한 카테고리 id 목록
+const showCategoryTab = ref(false);
+const openType = ref([]);
+const selectedCategories = ref([]);
 
-// (토글 함수, 수입/지출) type : income, expense
 const toggleType = (type) => {
   const idx = openType.value.indexOf(type);
   if (idx === -1) openType.value.push(type);
   else openType.value.splice(idx, 1);
 };
-// (토글 함수, 카테고리 선택/해제) id : 선택한 카테고리의 id
+
 const toggleCategory = (id) => {
   const idx = selectedCategories.value.indexOf(id);
   if (idx === -1) selectedCategories.value.push(id);
   else selectedCategories.value.splice(idx, 1);
 };
 
-// 선택된 카테고리를 "수입-월급" 형식으로 변환
-// selectedCategories 가 바뀔 때마다 자동으로 계산
 const selectedCategoriesLabels = computed(() => {
   return selectedCategories.value.map((id) => {
-    // id로 카테고리 객체 찾기
     const cat = categories.value.find((c) => c.id === id);
-    // type에 따라 '수입', '지출' 붙여서 return
     return cat
       ? `${cat.type === 'income' ? '수입' : '지출'} - ${cat.name}`
       : '';
   });
 });
 
-const categories = ref([]); // db.json에서 불러온 전체 카테고리 목록
-// onMounted(async () => {
-//   const res = await axios.get('http://localhost:3000/categories');
-//   categories.value = res.data; // 불러온 데이터 categories 에 저장
-// });
+const categories = ref([]);
+
+// 주석 풀고 userId 필터 추가
+onMounted(async () => {
+  const currentUser = userStore.getCurrentUser()
+  const res = await axios.get('/api/categories', {
+    params: { userId: currentUser.id }
+  })
+  categories.value = res.data
+})
 
 const getCategoryName = (categoryId) => {
   const cat = categories.value.find((c) => c.id === categoryId);
   return cat ? cat.name : categoryId;
 };
+
 // ======================
 // 3. 금액
 // ======================
 
-const minAmount = ref(''); //사용자가 입력한 최솟값
+const minAmount = ref('');
 const maxAmount = ref('');
 
 // ======================
 // 4. 검색어 (keyword)
 // ======================
-const keyword = ref(''); // 사용자가 입력한 검색어
-const results = ref([]); // 검색 결과 저장
+
+const keyword = ref('');
+const results = ref([]);
 
 // ======================
-// API 연결 :  search 함수
+// API 연결 : search 함수
 // ======================
 
 const search = async () => {
-  results.value = []; // 검색 시작 전, 초기화
+  results.value = [];
 
-  // json-server에서 전체 데이터 가져오기
-  const res = await axios.get('http://localhost:3000/budgets');
+  // userId 필터 추가
+  const currentUser = userStore.getCurrentUser()
+  const res = await axios.get('/api/budgets', {
+    params: { userId: currentUser.id }
+  })
   let data = res.data;
-  console.log(data.length);
-  console.log(data);
 
-  // 기간 필터 (선택했을 때만 적용)
   if (selectedPeriod.value === 'week') {
     data = data.filter((item) => weekRange.value.includes(item.date));
   } else if (selectedPeriod.value === 'month') {
@@ -241,14 +237,12 @@ const search = async () => {
     data = data.filter((item) => item.date === customDate.value);
   }
 
-  // 카테고리 필터 (선택했을 때만 적용)
   if (selectedCategories.value.length > 0) {
     data = data.filter((item) =>
       selectedCategories.value.includes(item.categoryId),
     );
   }
 
-  // 금액  필터 (입력했을 때만 적용)
   if (minAmount.value) {
     data = data.filter((item) => item.amount >= Number(minAmount.value));
   }
@@ -256,13 +250,12 @@ const search = async () => {
     data = data.filter((item) => item.amount <= Number(maxAmount.value));
   }
 
-  // 검색어 필터 (입력했을 때만 적용)
   if (keyword.value) {
     data = data.filter(
       (item) =>
         String(item.amount).includes(keyword.value) ||
         item.memo.includes(keyword.value),
-    ); // amount 와 memo 에서 일치하는 값 찾기
+    );
   }
   results.value = data;
 };

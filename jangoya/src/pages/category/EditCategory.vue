@@ -1,19 +1,30 @@
 <template>
   <div>
-    <header>
-      <button @click="router.push({ name: 'mypage/category' })">
+    <header
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+      "
+    >
+      <button @click="handleBack">
         <i class="bi bi-arrow-left"></i> 뒤로가기
       </button>
 
       <h2>카테고리 수정</h2>
-      <h3>{{ categoryData.type === 'expense' ? '지출' : '입금' }}</h3>
+      <h3>{{ categoryStore.draft.type === 'expense' ? '지출' : '입금' }}</h3>
 
-      <button @click="deleteCategory">삭제</button>
-
-      <button @click="checkAndUpdate">완료</button>
+      <div style="display: flex; gap: 10px">
+        <button @click="deleteCategory" style="color: red">삭제</button>
+        <button @click="checkAndUpdate">완료</button>
+      </div>
     </header>
 
-    <section @click="goToIconSelect" style="text-align: center; margin: 20px 0">
+    <section
+      @click="goToIconSelect"
+      style="text-align: center; margin: 20px 0; cursor: pointer"
+    >
       <div
         style="
           width: 80px;
@@ -23,89 +34,75 @@
           align-items: center;
           justify-content: center;
         "
-        :style="{ backgroundColor: categoryData.color }"
+        :style="{ backgroundColor: categoryStore.draft.color }"
       >
         <i
-          :class="['bi', categoryData.icon]"
+          :class="['bi', categoryStore.draft.icon]"
           style="color: white; font-size: 32px"
         ></i>
       </div>
-      <p>아이콘 변경</p>
+      <p style="margin-top: 10px; color: #666">아이콘 변경</p>
     </section>
 
-    <section>이름 : <input type="text" v-model="categoryData.name" /></section>
+    <section style="padding: 0 20px">
+      이름 :
+      <input
+        type="text"
+        v-model="categoryStore.draft.name"
+        style="padding: 5px"
+      />
+    </section>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useUserStore } from '@/stores/userStore';
-import axios from 'axios';
+import { useCategoryStore } from '@/stores/categoryStore';
+// ✨ axios, useUserStore 삭제!
 
 const route = useRoute();
 const router = useRouter();
+const categoryStore = useCategoryStore();
 const categoryId = route.params.id;
-const userStore = useUserStore();
 
-const categoryData = ref({
-  name: '',
-  icon: '',
-  color: '',
-  type: '',
-});
-
-// 1. 페이지가 열릴 때 기존 데이터 불러오기 (✨ fetch를 axios로 통일!)
 onMounted(async () => {
-  try {
-    const res = await axios.get(`/api/categories/${categoryId}`);
-    categoryData.value = res.data; // ✨ axios는 .data로 바로 꺼냅니다!
-
-    if (route.query.name) categoryData.value.name = route.query.name;
-    if (route.query.icon) categoryData.value.icon = route.query.icon;
-    if (route.query.color) categoryData.value.color = route.query.color;
-  } catch (err) {
-    console.error('데이터 로딩 실패:', err);
+  if (String(categoryStore.draft.id) !== String(categoryId)) {
+    try {
+      await categoryStore.fetchCategory(categoryId);
+    } catch (err) {
+      alert('데이터를 불러오지 못했습니다.');
+      router.push('/mypage/category');
+    }
   }
 });
 
-// 2. 아이콘 변경 페이지로 이동
-const goToIconSelect = () => {
-  router.push({
-    name: 'categoryicon',
-    query: {
-      name: categoryData.value.name,
-      icon: categoryData.value.icon,
-      color: categoryData.value.color,
-      type: categoryData.value.type,
-      id: categoryId,
-      origin: 'mypage/category/edit',
-    },
-  });
+const handleBack = () => {
+  categoryStore.resetDraft();
+  router.push({ name: 'mypage/category' });
 };
 
-// 3. 중복 검문소
+const goToIconSelect = () => {
+  router.push({ name: 'categoryicon' });
+};
+
 const checkAndUpdate = async () => {
-  if (!categoryData.value.name.trim()) {
+  const { name, type } = categoryStore.draft;
+
+  if (!name.trim()) {
     alert('이름을 입력해주세요!');
     return;
   }
 
   try {
-    const response = await axios.get('/api/categories', {
-      params: {
-        userId: userStore.getCurrentUser().id,
-      },
-    });
+    // 💡 스토어 목록 최신화 후 검사
+    await categoryStore.fetchCategoryList();
 
-    // ✨ axios는 .json() 안 씁니다!
-    const existingCategories = response.data;
-
-    const isDuplicate = existingCategories.some((category) => {
+    const isDuplicate = categoryStore.categoryList.some((category) => {
       return (
-        category.name === categoryData.value.name &&
+        category.name === name &&
         String(category.id) !== String(categoryId) &&
-        category.type === categoryData.value.type
+        category.type === type
       );
     });
 
@@ -114,41 +111,32 @@ const checkAndUpdate = async () => {
       return;
     }
 
-    updateCategory();
+    await updateCategory();
   } catch (error) {
     console.error('중복 검사 중 에러 발생:', error);
   }
 };
 
-// 4. 진짜 수정 완료 요청 (PATCH)
 const updateCategory = async () => {
   try {
-    const updatedData = {
-      ...categoryData.value,
-      userId: userStore.getCurrentUser().id, // ✨ 1 대신 유저 스토어 사용!
-    };
-
-    // ✨ 중괄호 빼고 updatedData 덩어리만 쏙 던져줍니다!
-    await axios.patch(`/api/categories/${categoryId}`, updatedData);
-
+    await categoryStore.updateCategory();
     alert('카테고리가 수정되었습니다!');
+    categoryStore.resetDraft();
     router.push('/mypage/category');
   } catch (err) {
-    // ✨ 점(.) 빼고 올바른 try...catch 문법 적용!
-    console.error('수정 실패:', err);
+    alert('수정 중 오류가 발생했습니다.');
   }
 };
 
-// 5. 삭제 버튼
 const deleteCategory = async () => {
-  try {
-    await axios.delete(`/api/categories/${categoryId}`);
-
-    alert('카테고리가 삭제되었습니다.');
-    router.push('/mypage/category');
-  } catch (err) {
-    // ✨ 점(.) 빼고 올바른 try...catch 문법 적용!
-    console.error('삭제 실패:', err);
+  if (confirm('정말 이 카테고리를 삭제하시겠습니까?')) {
+    try {
+      await categoryStore.deleteCategory(categoryId);
+      alert('카테고리가 삭제되었습니다.');
+      router.push('/mypage/category');
+    } catch (err) {
+      alert('삭제 중 오류가 발생했습니다.');
+    }
   }
 };
 </script>
