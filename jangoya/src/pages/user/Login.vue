@@ -1,35 +1,80 @@
 <template>
-  <div>
-    <h1>잔고야</h1>
-    <p>잔고야, 괜찮아?</p>
-
-    <div>
-      <label>아이디</label><br />
-      <input type="text" placeholder="ID를 입력해 주는 고야" v-model="userId" />
+  <div class="container mt-4" style="max-width: 480px; margin: 0 auto">
+    <!-- 타이틀 -->
+    <div class="text-center mb-4">
+      <div style="font-size: 50px">🐷</div>
+      <h1 class="fw-bold">잔고야</h1>
+      <p class="text-muted small mt-2">잔고야, 괜찮아?</p>
     </div>
 
-    <div>
-      <label>비밀번호</label><br />
-      <div>
+    <!-- 카드 -->
+    <div class="card p-4 shadow-sm mb-4" style="border-radius: 20px">
+      <!-- 아이디 -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold">아이디</label>
         <input
-          :type="showPassword ? 'text' : 'password'"
-          placeholder="비밀번호를 입력해 주는 고야"
-          v-model="password"
-          @keyup.enter="login"
+          type="text"
+          class="form-control"
+          placeholder="ID를 입력해 주세요."
+          v-model="userId"
+          style="border-radius: 12px"
         />
-        <button @click="showPassword = !showPassword">👁</button>
       </div>
-    </div>
 
-    <p v-if="errorMsg" style="color: red">{{ errorMsg }}</p>
+      <!-- 비밀번호 -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold">비밀번호</label>
+        <div class="input-group">
+          <input
+            :type="showPassword ? 'text' : 'password'"
+            class="form-control"
+            placeholder="비밀번호를 입력해 주세요."
+            v-model="password"
+            @keyup.enter="login"
+            style="border-radius: 12px 0 0 12px"
+          />
+          <button
+            class="btn btn-outline-secondary"
+            @click="showPassword = !showPassword"
+            style="border-radius: 0 12px 12px 0"
+          >
+            👁
+          </button>
+        </div>
+      </div>
 
-    <button @click="login">로그인</button>
-    <button @click="router.push('/user/register')">회원가입</button>
+      <!-- 에러 메시지 -->
+      <p v-if="errorMsg" class="text-danger text-center small">
+        {{ errorMsg }}
+      </p>
 
-    <div>
-      <span class="link" @click="router.push('/user/findaccount')"
-        >아이디/비밀번호를 잊은고야?</span
-      >
+      <!-- 버튼들 -->
+      <div class="d-grid gap-2 mb-3">
+        <button
+          class="btn btn-primary fw-bold"
+          @click="login"
+          style="border-radius: 12px; padding: 10px"
+        >
+          🔑 로그인
+        </button>
+        <button
+          class="btn btn-outline-secondary"
+          @click="router.push('/user/register')"
+          style="border-radius: 12px; padding: 10px"
+        >
+          🧑‍💼 회원가입
+        </button>
+      </div>
+
+      <!-- 계정 찾기 -->
+      <div class="text-center">
+        <span
+          class="link text-muted small"
+          @click="router.push('/user/findaccount')"
+          style="cursor: pointer; text-decoration: underline"
+          >🔍 아이디/비밀번호를 잊으셨나요?</span
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -85,6 +130,6 @@ const login = async () => {
 }
 
 .link:hover {
-  color: blue;
+  color: #0d6efd !important;
 }
 </style>
