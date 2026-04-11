@@ -62,29 +62,23 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import { useUserStore } from '@/stores/userStore';
 import { useFilterStore } from '@/stores/filterStore'; // ✨ 피니아 추가
+import { useCategoryStore } from '@/stores/categoryStore';
 
 const router = useRouter();
-const userStore = useUserStore();
 const filterStore = useFilterStore(); // ✨ 스토어 활성화
-
-const dbCategories = ref([]);
+const categoryStore = useCategoryStore();
 
 onMounted(async () => {
   try {
-    const res = await axios.get('/api/categories', {
-      params: { userId: userStore.getCurrentUser().id },
-    });
-    dbCategories.value = res.data;
+    await categoryStore.fetchCategoryList();
   } catch (error) {
     console.error('카테고리 로딩 실패:', error);
   }
 });
 
 const sortedCategories = computed(() => {
-  const list = [...dbCategories.value];
-  return list.sort((a, b) => {
+  return [...categoryStore.categoryList].sort((a, b) => {
     if (a.type === 'income' && b.type === 'expense') return -1;
     if (a.type === 'expense' && b.type === 'income') return 1;
     return 0;
