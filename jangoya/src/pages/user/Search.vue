@@ -136,7 +136,6 @@ const formatDate = (date) => {
   return `${y}-${m}-${d}`;
 };
 
-// 이번 달 범위 자동
 const monthRange = computed(() => {
   const month = [];
   const today = new Date();
@@ -147,7 +146,6 @@ const monthRange = computed(() => {
     month.push(formatDate(current));
     current.setDate(current.getDate() + 1);
   }
-  console.log(`${month[month.length - 1]} ~ ${month[0]}`);
   return month;
 });
 
@@ -160,8 +158,6 @@ const weekRange = computed(() => {
     const newDay = new Date(today.getTime() - i * oneDay);
     week.push(formatDate(newDay));
   }
-  console.log(`${week[6]} ~ ${week[0]}`);
-
   return week;
 });
 
@@ -185,15 +181,13 @@ const toggleType = (type) => {
   if (idx === -1) openType.value.push(type);
   else openType.value.splice(idx, 1);
 };
-// (토글 함수, 카테고리 선택/해제) id : 선택한 카테고리의 id
+
 const toggleCategory = (id) => {
   const idx = selectedCategories.value.indexOf(id);
   if (idx === -1) selectedCategories.value.push(id);
   else selectedCategories.value.splice(idx, 1);
 };
 
-// 선택된 카테고리를 "수입-월급" 형식으로 변환
-// selectedCategories 가 바뀔 때마다 자동으로 계산
 const selectedCategoriesLabels = computed(() => {
   return selectedCategories.value.map((id) => {
     const cat = categories.value.find((c) => c.id === id);
@@ -253,7 +247,6 @@ const search = async () => {
       selectedCategories.value.includes(item.categoryId),
     );
   }
-  // 금액 필터
   if (minAmount.value) {
     data = data.filter((item) => item.amount >= Number(minAmount.value));
   }
