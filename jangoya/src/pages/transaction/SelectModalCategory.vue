@@ -1,24 +1,39 @@
 <template>
-  <div class="modal">
-    <div class="box">
-      <h3></h3>
-      <div class="heading">
-        <span class="title"> :: 카테고리 선택</span>
-        <span class="float-end badge bg-secondary pointer" @click="exit">
+  <!-- backdrop 클릭 시 닫기 -->
+  <div class="modal-backdrop" @click.self="exit">
+    <div class="modal-box">
+      <!-- 헤더 -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold m-0">카테고리 선택</h5>
+
+        <button class="btn btn-sm btn-outline-secondary" @click="exit">
           X
-        </span>
+        </button>
       </div>
-      <button
-        v-for="categoryItem in categoryItems"
-        :key="categoryItem.id"
-        @click="selectCategory(categoryItem.id)"
-      >
-        <div style="background-color: blue">
-          카테고리 Id : {{ categoryItem.id }} / 카테고리 이름 :
-          {{ categoryItem.name }} 카테고리 타입 : {{ categoryItem.type }}
-        </div>
-        <br />
-      </button>
+
+      <!-- 리스트 -->
+      <div class="category-list">
+        <button
+          v-for="categoryItem in categoryItems"
+          :key="categoryItem.id"
+          class="category-item"
+          @click="selectCategory(categoryItem.id)"
+        >
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="text-start">
+              <div class="fw-semibold">
+                {{ categoryItem.name }}
+              </div>
+
+              <small class="text-muted">
+                ID: {{ categoryItem.id }} / {{ categoryItem.type }}
+              </small>
+            </div>
+
+            <span class="badge bg-light text-dark">선택</span>
+          </div>
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -35,12 +50,18 @@ const router = useRouter();
 const currentRoute = useRoute();
 
 const type = history.state?.categoryType;
-let categoryItems = categories.value.filter((x) => x.type === type);
+const categoryItems = categories.value.filter((x) => x.type === type);
 
+/**
+ * 모달 닫기
+ */
 const exit = () => {
   router.push({ name: 'transaction/edit/id' });
 };
 
+/**
+ * 카테고리 선택
+ */
 const selectCategory = (id) => {
   router.push({
     name: 'transaction/edit/id',
@@ -51,50 +72,46 @@ const selectCategory = (id) => {
 </script>
 
 <style scoped>
-.modal {
-  display: block;
+.modal-backdrop {
   position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-box {
   width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
-}
-
-.box {
-  background-color: white;
-  margin: 80px auto;
-  max-width: 500px;
-  min-width: 100px;
-  min-height: 350px;
-  font: 13px 'verdana';
-  padding: 10px 10px 10px 10px;
-}
-
-.box div {
-  padding: 0;
-  display: block;
-  margin: 10px 0 0 0;
-}
-
-.box .heading {
-  background: #33a17f;
-  font-weight: 300;
-  text-align: left;
-  color: #fff;
-  margin: 5px 0 5px 0;
-  padding: 10px;
-  min-width: 200px;
-  max-width: 500px;
-}
-
-.box .player {
+  max-width: 520px;
   background: white;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
-.pointer {
+.category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.category-item {
+  width: 100%;
+  border: 1px solid #e9ecef;
+  background: white;
+  padding: 12px;
+  border-radius: 12px;
+  transition: 0.2s;
+  text-align: left;
+}
+
+.category-item:hover {
+  background: #f8f9fa;
+  transform: translateY(-1px);
+}
+
+button {
   cursor: pointer;
 }
 </style>

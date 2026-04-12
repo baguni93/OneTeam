@@ -5,6 +5,13 @@
       "userId": "1",
       "name": "홍길동",
       "password": "1234"
+    },
+    {
+      "id": "1775809140908",
+      "userId": "12",
+      "name": "우진",
+      "email": "wls5558@gmail.com",
+      "password": "1234"
     }
   ],
   "budgets": [
@@ -16,6 +23,24 @@
       "memo": "",
       "userId": "1",
       "id": 1
+    },
+    {
+      "date": "2026-04-10",
+      "type": "expense",
+      "categoryId": "5",
+      "amount": 1000,
+      "memo": "",
+      "userId": "1",
+      "id": 2
+    },
+    {
+      "date": "2026-04-10",
+      "type": "income",
+      "categoryId": "1",
+      "amount": 0,
+      "memo": "",
+      "userId": "1",
+      "id": 3
     }
   ],
   "categories": [

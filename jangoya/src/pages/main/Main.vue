@@ -1,47 +1,58 @@
 <template>
-  <div class="container mt-4">
-    <div class="row mb-4">
-      <div class="col-md-4">
-        <div class="card text-center p-3">
-          <div>수입</div>
-          <h5>{{ sumAmount('income') }}원</h5>
-        </div>
+  <div class="container-fluid mt-3">
+    <!-- 🔥 요약 카드 (항상 한 줄) -->
+    <div class="summary-row mb-3">
+      <div class="card summary-card shadow-sm border-0 text-center">
+        <div class="label text-success">수입</div>
+        <div class="amount">{{ formatNumber(sumAmount('income')) }}원</div>
       </div>
 
-      <div class="col-md-4">
-        <div class="card text-center p-3">
-          <div>지출</div>
-          <h5>{{ sumAmount('expense') }}원</h5>
-        </div>
+      <div class="card summary-card shadow-sm border-0 text-center">
+        <div class="label text-danger">지출</div>
+        <div class="amount">{{ formatNumber(sumAmount('expense')) }}원</div>
       </div>
 
-      <div class="col-md-4">
-        <div class="card text-center p-3">
-          <div>잔액</div>
-          <h5>
-            {{ currentAmount(sumAmount('income'), sumAmount('expense')) }}원
-          </h5>
+      <div class="card summary-card shadow-sm border-0 text-center">
+        <div class="label text-primary">잔액</div>
+        <div
+          class="amount"
+          :class="{
+            'text-danger': currentAmount < 0,
+            'text-primary': currentAmount >= 0,
+          }"
+        >
+          {{ formatNumber(currentAmount) }}원
         </div>
       </div>
     </div>
 
-    <div class="card mb-4">
-      <div class="card-body">
+    <!-- 달력 -->
+    <div class="card shadow-sm mb-3 border-0">
+      <div class="card-body calendar-wrapper">
         <Calendar />
       </div>
     </div>
 
-    <div class="d-flex justify-content-end mb-3">
-      <router-link class="btn btn-primary" to="search"> + 검색 </router-link>
-      <router-link class="btn btn-primary" to="category/filter">
-        + 필터
+    <!-- 버튼 -->
+    <div class="d-flex justify-content-end gap-2 mb-2 flex-wrap">
+      <router-link class="btn btn-sm btn-outline-primary" to="search">
+        검색
       </router-link>
-      <router-link class="btn btn-primary" to="transction/add">
+
+      <router-link
+        class="btn btn-sm btn-outline-secondary"
+        to="category/filter"
+      >
+        필터
+      </router-link>
+
+      <router-link class="btn btn-sm btn-primary" to="transction/add">
         + 추가
       </router-link>
     </div>
 
-    <div class="card">
+    <!-- 리스트 -->
+    <div class="card shadow-sm border-0">
       <div class="card-body">
         <TransctionList />
       </div>
@@ -53,22 +64,55 @@
 import TransctionList from '@/components/TransctionList.vue';
 import Calendar from '@/components/Calendar.vue';
 import { useBudgetStore } from '@/stores/dateStore';
+import { computed } from 'vue';
 
 const budgetsStore = useBudgetStore();
 const budgets = budgetsStore.budgets;
 
 const sumAmount = (type) => {
-  const incomeBudgets = budgets.filter((x) => x.type === type);
-  let sum = 0;
-
-  incomeBudgets.forEach((x) => {
-    sum += x.amount;
-  });
-
-  return sum;
+  return budgets
+    .filter((x) => x.type === type)
+    .reduce((sum, x) => sum + x.amount, 0);
 };
 
-const currentAmount = (income, expense) => {
-  return income - expense;
+const currentAmount = computed(() => {
+  return sumAmount('income') - sumAmount('expense');
+});
+
+const formatNumber = (num) => {
+  if (!num) return 0;
+  return num.toLocaleString();
 };
 </script>
+
+<style scoped>
+/* 🔥 항상 3칸 고정 */
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+/* 카드 */
+.summary-card {
+  padding: 6px;
+  min-width: 0;
+}
+
+/* 텍스트 */
+.label {
+  font-size: clamp(9px, 2vw, 12px);
+  font-weight: bold;
+}
+
+.amount {
+  font-size: clamp(11px, 3vw, 16px);
+  font-weight: bold;
+  margin-top: 2px;
+}
+
+/* 달력 overflow 방지 */
+.calendar-wrapper {
+  overflow-x: hidden;
+}
+</style>

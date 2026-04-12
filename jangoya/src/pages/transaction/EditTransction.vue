@@ -1,61 +1,81 @@
 <template>
-  <div class="row">
-    <div class="col p-3">
-      <h2>{{ editType }}</h2>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col">
-      <div>
-        <button
-          @click="
-            router.push({
-              path: `/transaction/edit/${currentRoute.params.id}/modalcategory`,
-              state: {
-                categoryType: matchedBudgetsItem.type,
-              },
-            })
-          "
-        >
-          {{ categoryItem?.name }} {{ categoryItem?.id }}
-        </button>
-      </div>
+  <div class="container mt-4">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <!-- 헤더 -->
+        <div class="text-center mb-4">
+          <h3>{{ editType }}</h3>
+          <small class="text-muted">거래 수정</small>
+        </div>
 
-      <div class="form-group">
-        <label>금액:</label>
-        <input type="text" class="form-control" v-model="budgetItem.amount" />
-      </div>
-      <div class="form-group">
-        <label>메모:</label>
-        <textarea
-          class="form-control"
-          rows="3"
-          v-model="budgetItem.memo"
-        ></textarea>
-      </div>
+        <!-- 카드 -->
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <!-- 카테고리 -->
+            <div class="mb-3">
+              <label class="form-label">카테고리</label>
 
-      <div class="form-group">
-        <button
-          type="button"
-          class="btn btn-primary m-1"
-          @click="updateBudgetHandler"
-        >
-          수 정
-        </button>
-        <button
-          type="button"
-          class="btn btn-primary m-1"
-          @click="router.push('/')"
-        >
-          취 소
-        </button>
-        <button
-          type="button"
-          class="btn btn-primary m-1"
-          @click="deleteBudgetHandler"
-        >
-          삭제
-        </button>
+              <button
+                class="btn btn-light w-100 d-flex justify-content-between align-items-center"
+                @click="
+                  router.push({
+                    path: `/transaction/edit/${currentRoute.params.id}/modalcategory`,
+                    state: {
+                      categoryType: matchedBudgetsItem.type,
+                    },
+                  })
+                "
+              >
+                <span class="fw-semibold text-truncate">
+                  {{ categoryItem?.name }}
+                </span>
+
+                <span class="badge bg-secondary">선택</span>
+              </button>
+            </div>
+
+            <!-- 금액 -->
+            <div class="mb-3">
+              <label class="form-label">금액</label>
+              <input
+                type="number"
+                class="form-control form-control-lg"
+                v-model="budgetItem.amount"
+              />
+            </div>
+
+            <!-- 메모 -->
+            <div class="mb-4">
+              <label class="form-label">메모</label>
+              <input
+                type="text"
+                class="form-control"
+                v-model="budgetItem.memo"
+              />
+            </div>
+
+            <!-- 버튼 -->
+            <div class="d-grid gap-2">
+              <button class="btn btn-primary" @click="updateBudgetHandler">
+                수정
+              </button>
+
+              <button
+                class="btn btn-outline-secondary"
+                @click="router.push('/')"
+              >
+                취소
+              </button>
+
+              <button
+                class="btn btn-outline-danger"
+                @click="deleteBudgetHandler"
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -85,31 +105,18 @@ const matchedBudgetsItem = computed(() => {
 watch(
   matchedBudgetsItem,
   (item) => {
-    if (!item) {
-      router.push('/');
-    }
+    if (!item) router.push('/');
   },
   { immediate: true },
 );
 
 const budgetItem = reactive({ ...matchedBudgetsItem.value });
 
-watch(
-  () => currentRoute.query.categoryId,
-  (newId) => {
-    if (newId) {
-      budgetItem.categoryId = Number(newId);
-    }
-  },
-  { immediate: true },
-);
-
 const categoryItem = computed(() => {
   return categories.value.find((x) => x.id === budgetItem.categoryId);
 });
 
-const editType =
-  budgetItem.type === 'income' ? '수입 내역 수정 ' : '지출 내역 수정';
+const editType = budgetItem.type === 'income' ? '수입' : '지출';
 
 const updateBudgetHandler = () => {
   updateBudget({ ...budgetItem }, () => {
