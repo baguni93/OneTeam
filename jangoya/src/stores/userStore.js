@@ -21,7 +21,8 @@ export const useUserStore = defineStore('user', () => {
         user.value = userWithoutPassword;
         isLoggedIn.value = true;
         // 한글 지원을 위해 encodeURIComponent로 변환 후 btoa로 인코딩해서 저장
-        sessionStorage.setItem( //  변경
+        sessionStorage.setItem(
+          //  변경
           'user',
           btoa(
             unescape(encodeURIComponent(JSON.stringify(userWithoutPassword))),
@@ -30,10 +31,6 @@ export const useUserStore = defineStore('user', () => {
         return { success: true };
       }
     } catch (error) {
-      return {
-        success: false,
-        message: error.response?.data?.message || '로그인에 실패했습니다',
-      };
       return {
         success: false,
         message: error.response?.data?.message || '로그인에 실패했습니다',
