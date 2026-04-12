@@ -26,18 +26,23 @@
       >
         <div class="date">{{ day.day }}</div>
 
+        <!-- 수입 / 지출 -->
+        <div class="summary" v-if="day.date">
+          <div class="income">
+            {{ sumByDate(day.date, 'income') }}
+          </div>
+          <div class="expense">
+            {{ sumByDate(day.date, 'expense') }}
+          </div>
+        </div>
+
+        <!-- 리스트 -->
         <ul class="items">
           <li v-for="item in getItems(day.date)" :key="item">
             {{ item }}
           </li>
         </ul>
       </div>
-    </div>
-
-    입력
-    <div class="input-area">
-      <input v-model="inputText" placeholder="내용 입력" />
-      <button @click="addItem">추가</button>
     </div>
   </div>
 </template>
@@ -47,36 +52,28 @@ import { ref, computed } from 'vue';
 import { useBudgetStore, useDateStore } from '@/stores/dateStore';
 import { storeToRefs } from 'pinia';
 
+/* store */
 const dateStore = useDateStore();
-const { selectedDate } = storeToRefs(dateStore);
-
 const budgetStore = useBudgetStore();
-const { budgets } = storeToRefs(budgetStore);
-const test = computed(() => {
-  const incomeBudget = budgets.value.filter((x) => x.type === 'income');
-  const expenseBudget = budgets.value.filter((x) => x.type === 'expense');
-});
 
+const { selectedDate } = storeToRefs(dateStore);
+const { budgets } = storeToRefs(budgetStore);
+
+/* 날짜 선택 */
 const selectDate = (day) => {
   if (!day?.date) return;
-
   dateStore.setDate(day.date);
 };
 
+/* 현재 날짜 */
 const today = new Date();
 const currentYear = ref(today.getFullYear());
 const currentMonth = ref(today.getMonth());
-/**
- * 데이터 저장 (날짜별 리스트)
- */
-const itemsByDate = ref({});
 
-/**
- * 요일
- */
+/* 요일 */
 const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
 
-// 달력 굳이 computed 안써도 됨 4월만 만들꺼라
+/* 달력 생성 */
 const calendarDays = computed(() => {
   const year = currentYear.value;
   const month = currentMonth.value;
@@ -89,7 +86,7 @@ const calendarDays = computed(() => {
 
   const days = [];
 
-  // 이전 달 채우기
+  // 이전 달
   for (let i = 0; i < startDayOfWeek; i++) {
     days.push({ day: '', date: null, isCurrentMonth: false });
   }
@@ -108,9 +105,19 @@ const calendarDays = computed(() => {
   return days;
 });
 
-/**
- * 아이템 추가
- */
+/* 🔥 핵심: 0이면 공백 */
+const sumByDate = (date, type) => {
+  const sum = budgets.value
+    .filter((x) => x.date === date && x.type === type)
+    .reduce((sum, x) => sum + x.amount, 0);
+
+  return sum === 0 ? '' : sum;
+};
+
+/* 테스트 데이터 */
+const itemsByDate = ref({});
+const inputText = ref('');
+
 const addItem = () => {
   if (!selectedDate.value || !inputText.value) return;
 
@@ -122,83 +129,105 @@ const addItem = () => {
   inputText.value = '';
 };
 
-/**
- * 날짜별 아이템 조회
- */
 const getItems = (date) => {
   return itemsByDate.value[date] || [];
 };
 </script>
 
-<style>
+<style scoped>
 .calendar-container {
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
-  font-family: Arial;
+  padding: 0 10px;
 }
 
 /* 헤더 */
 .header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 10px;
+  text-align: center;
 }
 
 /* 요일 */
 .weekdays {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   text-align: center;
   font-weight: bold;
-  margin-top: 10px;
+  font-size: clamp(12px, 2vw, 16px);
 }
 
-/* 달력 그리드 */
+/* 🔥 핵심 grid */
 .grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 5px;
-  margin-top: 10px;
   width: 100%;
 }
 
-/* 셀 */
+/* 🔥 핵심 cell */
 .cell {
-  border: 1px solid #ccc;
-  min-height: 80px;
-  padding: 5px;
-  cursor: pointer;
-  background-color: white;
+  aspect-ratio: 1 / 1;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-/* 선택된 날짜 */
+/* 선택 */
 .selected {
   background-color: #4caf50;
   color: white;
 }
 
-/* 다른 달 날짜 */
+/* 비활성 */
 .disabled {
   background-color: #f5f5f5;
   color: #aaa;
 }
 
-/* 날짜 숫자 */
+/* 날짜 */
 .date {
   font-weight: bold;
+  font-size: clamp(12px, 2vw, 16px);
+}
+
+/* 수입/지출 */
+.summary {
+  font-size: clamp(10px, 1.5vw, 12px);
+}
+
+.income {
+  color: #2e7d32;
+}
+
+.expense {
+  color: #c62828;
 }
 
 /* 리스트 */
 .items {
-  font-size: 12px;
-  margin-top: 5px;
-  padding-left: 10px;
+  font-size: clamp(10px, 1.3vw, 12px);
+  overflow: hidden;
 }
 
 /* 입력 */
 .input-area {
   margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.input-area input {
+  flex: 1;
+}
+
+/* 모바일 */
+@media (max-width: 600px) {
+  .cell {
+    padding: 2px;
+  }
 }
 </style>
