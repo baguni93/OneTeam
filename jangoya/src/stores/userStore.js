@@ -21,7 +21,7 @@ export const useUserStore = defineStore('user', () => {
         user.value = userWithoutPassword;
         isLoggedIn.value = true;
         // 한글 지원을 위해 encodeURIComponent로 변환 후 btoa로 인코딩해서 저장
-        localStorage.setItem(
+        sessionStorage.setItem(
           //  변경
           'user',
           btoa(
@@ -43,13 +43,13 @@ export const useUserStore = defineStore('user', () => {
   const logout = () => {
     user.value = null;
     isLoggedIn.value = false;
-    localStorage.removeItem('user'); 
+    sessionStorage.removeItem('user');
   };
 
   // 새로고침 시 로그인 유지
   // 로컬스토리지에 저장된 유저 정보를 디코딩해서 불러옴
   const initUser = () => {
-    const savedUser = localStorage.getItem('user'); 
+    const savedUser = sessionStorage.getItem('user');
     if (savedUser) {
       // btoa로 인코딩된 데이터를 atob로 디코딩 후 한글 복원
       user.value = JSON.parse(decodeURIComponent(escape(atob(savedUser))));

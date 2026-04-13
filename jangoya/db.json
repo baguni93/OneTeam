@@ -1,14 +1,42 @@
 {
   "users": [
     {
-      "id": "1776050892286",
+      "id": "1776053787902",
       "userId": "1",
       "name": "우진",
       "email": "wls8428@gmail.com",
       "password": "1234"
     }
   ],
-  "budgets": [],
+  "budgets": [
+    {
+      "date": "2026-04-13",
+      "type": "income",
+      "categoryId": 3,
+      "amount": 123,
+      "memo": "",
+      "userId": "1776053787902",
+      "id": 1
+    },
+    {
+      "date": "2026-04-13",
+      "type": "income",
+      "categoryId": 3,
+      "amount": 12314,
+      "memo": "",
+      "userId": "1",
+      "id": 2
+    },
+    {
+      "date": "2026-04-13",
+      "type": "income",
+      "categoryId": 3,
+      "amount": 21431,
+      "memo": "",
+      "userId": "1",
+      "id": 3
+    }
+  ],
   "categories": [
     {
       "type": "income",

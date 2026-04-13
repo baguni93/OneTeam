@@ -107,7 +107,7 @@ export const useBudgetStore = defineStore('budgets', () => {
         categoryId,
         amount,
         memo,
-        userId: currentUser.id,
+        userId: currentUser.userId,
       };
       const response = await axios.post(BASEURI, payload);
       if (response.status === 201) {

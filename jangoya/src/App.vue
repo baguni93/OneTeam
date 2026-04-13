@@ -7,7 +7,7 @@
 
 <script setup>
 import { useUserStore } from '@/stores/userStore';
-
+import { watch } from 'vue';
 import { useBudgetStore } from './stores/dateStore';
 import { useCategoryStore } from './stores/categoryStore';
 import { useRouter } from 'vue-router';
@@ -23,14 +23,19 @@ const { fetchCategoryList } = categoryStore;
 
 onMounted(() => {
   userStore.initUser();
-
-  if (!userStore.isLoggedIn) {
-    router.push('/user/login');
-  } else {
-    fetchBudget();
-    fetchCategoryList();
-  }
 });
 
+watch(
+  () => userStore.isLoggedIn,
+  (isLoggedIn) => {
+    if (isLoggedIn) {
+      fetchBudget();
+      fetchCategoryList();
+    } else {
+      router.push('/user/login');
+    }
+  },
+  { immediate: true },
+);
 //date 받아옴
 </script>
