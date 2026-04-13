@@ -28,9 +28,7 @@ export const useCategoryStore = defineStore('category', () => {
     };
   };
 
-  const getUserId = () => userStore.getCurrentUser().id;
-
-
+  const getUserId = () => userStore.getCurrentUser().userId;
 
   // ✨ [GET] 1. 전체 목록 가져오기 (Category.vue 리스트 렌더링용)
   const fetchCategoryList = async () => {
@@ -42,6 +40,8 @@ export const useCategoryStore = defineStore('category', () => {
       });
       // 가져온 배열 데이터를 스토어의 큰 상자에 담습니다.
       categoryList.value = res.data;
+      console.log('카테고리 목록 조회 성공');
+      console.log(categoryList.value);
     } catch (err) {
       console.error('카테고리 목록 조회 실패:', err);
     }

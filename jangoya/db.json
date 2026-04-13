@@ -1,88 +1,54 @@
 {
   "users": [
     {
-      "id": "1",
+      "id": "1776050892286",
       "userId": "1",
-      "name": "홍길동",
-      "password": "1234"
-    },
-    {
-      "id": "1775809140908",
-      "userId": "12",
       "name": "우진",
-      "email": "wls5558@gmail.com",
+      "email": "wls8428@gmail.com",
       "password": "1234"
     }
   ],
-  "budgets": [
+  "budgets": [],
+  "categories": [
     {
-      "date": "2026-04-10",
       "type": "income",
-      "categoryId": "2",
-      "amount": 10000,
-      "memo": "",
+      "name": "월급",
+      "color": "red",
+      "icon": "bi-cash",
       "userId": "1",
       "id": 1
     },
     {
-      "date": "2026-04-10",
-      "type": "expense",
-      "categoryId": "5",
-      "amount": 1000,
-      "memo": "",
+      "type": "income",
+      "name": "용돈",
+      "color": "blue",
+      "icon": "bi-wallet2",
       "userId": "1",
       "id": 2
     },
     {
-      "date": "2026-04-10",
-      "type": "income",
-      "categoryId": "1",
-      "amount": 0,
-      "memo": "",
-      "userId": "1",
-      "id": 3
-    }
-  ],
-  "categories": [
-    {
-      "id": "1",
-      "userId": "1",
-      "type": "income",
-      "name": "월급",
-      "color": "red",
-      "icon": "주소"
-    },
-    {
-      "id": "2",
-      "userId": "1",
-      "type": "income",
-      "name": "용돈",
-      "color": "blue",
-      "icon": "주소"
-    },
-    {
-      "id": "3",
-      "userId": "1",
       "type": "income",
       "name": "기타",
       "color": "green",
-      "icon": "주소"
+      "icon": "bi-star",
+      "userId": "1",
+      "id": 3
     },
     {
-      "id": "4",
-      "userId": "1",
       "type": "expense",
       "name": "식비",
       "color": "orange",
-      "icon": "주소"
+      "icon": "bi-cup-hot",
+      "userId": "1",
+      "id": 4
     },
     {
-      "id": "5",
-      "userId": "1",
       "type": "expense",
       "name": "교통비",
       "color": "yellow",
-      "icon": "주소"
+      "icon": "bi-car-front",
+      "userId": "1",
+      "id": 5
     }
   ],
   "budget_plans": [

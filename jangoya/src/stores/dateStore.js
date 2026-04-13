@@ -41,7 +41,7 @@ export const useBudgetStore = defineStore('budgets', () => {
         type: 'income',
         name: '월급',
         color: 'red',
-        icon: '주소',
+        icon: 'bi-cash',
       },
       {
         id: '2',
@@ -49,7 +49,7 @@ export const useBudgetStore = defineStore('budgets', () => {
         type: 'income',
         name: '용돈',
         color: 'blue',
-        icon: '주소',
+        icon: 'bi-wallet2',
       },
       {
         id: '3',
@@ -57,15 +57,15 @@ export const useBudgetStore = defineStore('budgets', () => {
         type: 'income',
         name: '기타',
         color: 'green',
-        icon: '주소',
+        icon: 'bi-star',
       },
       {
         id: '4',
         userId: '1',
-        type: 'income',
+        type: 'expense',
         name: '식비',
         color: 'orange',
-        icon: '주소',
+        icon: 'bi-cup-hot',
       },
       {
         id: '5',
@@ -73,7 +73,7 @@ export const useBudgetStore = defineStore('budgets', () => {
         type: 'expense',
         name: '교통비',
         color: 'yellow',
-        icon: '주소',
+        icon: 'bi-car-front',
       },
     ],
   });
@@ -81,7 +81,7 @@ export const useBudgetStore = defineStore('budgets', () => {
   const fetchBudget = async () => {
     try {
       const currentUser = userStore.getCurrentUser();
-      let params = { userId: currentUser.id };
+      let params = { userId: currentUser.userId };
       const response = await axios.get(BASEURI, { params });
       if (response.status === 200) {
         state.budgets = response.data;

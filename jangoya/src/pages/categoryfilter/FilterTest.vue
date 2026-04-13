@@ -19,15 +19,15 @@
     <div class="col">
       <div class="card">
         <div class="card-body">
-          <div class="header" v-if="categoryFilterBudgets.length <= 0">
+          <div class="header" v-if="filterBudgets.length <= 0">
             지출 내역이 없어요.
           </div>
           <ul class="list-group" style="background-color: aqua">
             <TrasctionItem
-              v-for="budgetItem in categoryFilterBudgets"
+              v-for="budgetItem in filterBudgets"
               :key="budgetItem.id"
               :budgetItem="budgetItem"
-            />
+            ></TrasctionItem>
           </ul>
         </div>
       </div>
@@ -36,35 +36,21 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { useFilterStore } from '@/stores/filterStore';
-import { useBudgetStore } from '@/stores/dateStore'; // 이름은 dateStore지만 budgetStore를 가져옴
-import TrasctionItem from '@/components/TrasctionItem.vue';
+import { useFilterStore } from '@/stores/filterStore'; // ✨ 피니아 추가
 
 const router = useRouter();
-const filterStore = useFilterStore();
+const filterStore = useFilterStore(); // ✨ 스토어 활성화
+
+//budget을 불러옵니다.
+import { useBudgetStore } from '@/stores/dateStore';
+import TrasctionItem from '@/components/TrasctionItem.vue';
 const budgetStore = useBudgetStore();
-
-// 💡 중요: 페이지가 열릴 때 일단 가계부 전체 내역을 서버에서 가져옵니다!
-onMounted(() => {
-  budgetStore.fetchBudget();
-});
-
-const categoryFilterBudgets = computed(() => {
-  // 1. 텅 빈 배열일 때
-  if (!filterStore.appliedIds || filterStore.appliedIds.length === 0) {
-    return [];
-  }
-
-  // 2. 가계부 '전체 내역 배열'을 돌면서 필터링
-  return budgetStore.budgets.filter((budget) => {
-    return filterStore.appliedIds.includes(String(budget.categoryId));
-  });
-  console.log(categoryFilterBudgets); // 콘솔에는 잘찍힙니다!
-});
+const { categoryFilterBudgets } = budgetStore;
+const filterBudgets = categoryFilterBudgets(2);
 
 const goToFilterPage = () => {
+  // 라우터 설정에 등록된 필터 페이지 주소로 이동
   router.push({ name: 'category/filter' });
 };
 </script>

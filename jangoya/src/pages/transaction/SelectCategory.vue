@@ -4,7 +4,7 @@
     <div class="text-center mb-4">
       <h4>카테고리 선택</h4>
       <div class="text-muted">
-        {{ type === 'income' ? '💰 수입' : '💸 지출' }} / {{ amount }}원
+        {{ type === 'income' ? '수입' : '지출' }} / {{ amount }}원
       </div>
     </div>
 
@@ -22,19 +22,23 @@
           <div
             class="card-body d-flex justify-content-between align-items-center"
           >
-            <div>
-              <div class="fw-bold">
-                {{ categoryItem.name }}
+            <!-- 왼쪽 -->
+            <div class="d-flex align-items-center gap-3">
+              <!-- 아이콘 -->
+              <div
+                class="icon-circle"
+                :style="{ backgroundColor: categoryItem.color }"
+              >
+                <i :class="['bi', categoryItem.icon]"></i>
               </div>
-              <small class="text-muted"> ID: {{ categoryItem.id }} </small>
-            </div>
 
-            <span
-              class="badge"
-              :class="type === 'income' ? 'bg-success' : 'bg-danger'"
-            >
-              {{ categoryItem.type }}
-            </span>
+              <!-- 텍스트 -->
+              <div>
+                <div class="fw-bold">
+                  {{ categoryItem.name }}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -65,19 +69,28 @@
 import { useRouter } from 'vue-router';
 import { useBudgetStore } from '@/stores/dateStore';
 import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
+
+import { useCategoryStore } from '@/stores/categoryStore';
+
+const categoryStore = useCategoryStore();
+const { categoryList } = storeToRefs(categoryStore);
 
 const budgetStore = useBudgetStore();
-const { categories } = storeToRefs(budgetStore);
 
 const router = useRouter();
 
+// 전달값
 const amount = history.state?.amount;
 const type = history.state?.categoryType;
 
-let categoryItems = categories.value.filter((x) => x.type === type);
+const categoryItems = computed(() => {
+  return categoryList.value.filter((x) => x.type === type);
+});
 
 const { addBudget } = budgetStore;
 
+// 등록
 const addBudgetHandler = (categoryItemId) => {
   const budgetItem = {
     date: new Date().toDateString(),
@@ -86,6 +99,7 @@ const addBudgetHandler = (categoryItemId) => {
     amount: amount,
     memo: '',
   };
+
   addBudget({ ...budgetItem }, () => {
     router.push('/');
   });
@@ -93,23 +107,35 @@ const addBudgetHandler = (categoryItemId) => {
 </script>
 
 <style scoped>
-/* ===== 카드 hover 핵심 ===== */
+/* 카드 */
 .category-card {
   cursor: pointer;
   transition: all 0.2s ease;
   border-radius: 12px;
 }
 
-/* hover 효과 */
 .category-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
   background-color: #f8f9fa;
 }
 
-/* 클릭 느낌 */
 .category-card:active {
   transform: translateY(-1px);
   box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 아이콘 원 */
+.icon-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 18px;
+  color: #fff;
 }
 </style>
