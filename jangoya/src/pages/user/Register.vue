@@ -177,9 +177,52 @@ const register = async () => {
       password: password.value,
     });
 
-    if (res.data.success) {
+    if (res.data) {
+      const defaultCategories = [
+        {
+          type: 'income',
+          name: '월급',
+          color: 'red',
+          icon: 'bi-cash',
+        },
+        {
+          type: 'income',
+          name: '용돈',
+          color: 'blue',
+          icon: 'bi-wallet2',
+        },
+        {
+          type: 'income',
+          name: '기타',
+          color: 'green',
+          icon: 'bi-star',
+        },
+        {
+          type: 'expense',
+          name: '식비',
+          color: 'orange',
+          icon: 'bi-cup-hot',
+        },
+        {
+          type: 'expense',
+          name: '교통비',
+          color: 'yellow',
+          icon: 'bi-car-front',
+        },
+      ];
+
+      await Promise.all(
+        defaultCategories.map((cat) =>
+          axios.post('/api/categories', {
+            ...cat,
+            userId: userId.value,
+          }),
+        ),
+      );
+
       successMsg.value = '회원가입이 완료되었습니다!';
       errorMsg.value = '';
+
       setTimeout(() => {
         router.push('/user/login');
       }, 2000);

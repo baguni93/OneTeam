@@ -3,8 +3,11 @@
     <!-- 왼쪽: 아이콘 + 정보 -->
     <div class="d-flex align-items-center gap-3">
       <!-- 아이콘 -->
-      <div class="icon-circle" :class="budgetItem.type">
-        {{ getIcon(budgetItem.categoryId) }}
+      <div
+        class="icon-circle"
+        :style="{ backgroundColor: matchedCategoryItem?.color }"
+      >
+        <i :class="['bi', matchedCategoryItem?.icon]"></i>
       </div>
 
       <!-- 내용 -->
@@ -16,7 +19,7 @@
 
         <!-- 서브 정보 -->
         <small class="text-muted">
-          {{ budgetItem.type }} · 카테고리 {{ budgetItem.categoryId }}
+          {{ matchedCategoryItem?.name || '카테고리 없음' }}
         </small>
       </div>
     </div>
@@ -31,11 +34,21 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
+import { useCategoryStore } from '@/stores/categoryStore';
+import { storeToRefs } from 'pinia';
+import { computed } from 'vue';
 
+const categoryStore = useCategoryStore();
+const { categoryList } = storeToRefs(categoryStore);
 const props = defineProps({
   budgetItem: Object,
 });
 
+const matchedCategoryItem = computed(() => {
+  const id = props.budgetItem.categoryId;
+
+  return categoryList.value.find((item) => String(item.id) === String(id));
+});
 const router = useRouter();
 
 const goEdit = () => {

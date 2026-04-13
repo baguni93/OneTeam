@@ -20,16 +20,25 @@
           @click="selectCategory(categoryItem.id)"
         >
           <div class="d-flex justify-content-between align-items-center">
-            <div class="text-start">
-              <div class="fw-semibold">
-                {{ categoryItem.name }}
+            <!-- 왼쪽 -->
+            <div class="d-flex align-items-center gap-3">
+              <!-- 아이콘 -->
+              <div
+                class="icon-circle"
+                :style="{ backgroundColor: categoryItem.color }"
+              >
+                <i :class="['bi', categoryItem.icon]"></i>
               </div>
 
-              <small class="text-muted">
-                ID: {{ categoryItem.id }} / {{ categoryItem.type }}
-              </small>
+              <!-- 텍스트 -->
+              <div class="text-start">
+                <div class="fw-semibold">
+                  {{ categoryItem.name }}
+                </div>
+              </div>
             </div>
 
+            <!-- 오른쪽 -->
             <span class="badge bg-light text-dark">선택</span>
           </div>
         </button>
@@ -40,28 +49,26 @@
 
 <script setup>
 import { useRouter, useRoute } from 'vue-router';
-import { useBudgetStore } from '@/stores/dateStore';
 import { storeToRefs } from 'pinia';
+import { useCategoryStore } from '@/stores/categoryStore';
+import { computed } from 'vue';
 
-const budgetStore = useBudgetStore();
-const { categories } = storeToRefs(budgetStore);
+const categoryStore = useCategoryStore();
+const { categoryList } = storeToRefs(categoryStore);
 
 const router = useRouter();
 const currentRoute = useRoute();
 
 const type = history.state?.categoryType;
-const categoryItems = categories.value.filter((x) => x.type === type);
 
-/**
- * 모달 닫기
- */
+const categoryItems = computed(() => {
+  return categoryList.value.filter((x) => x.type === type);
+});
+
 const exit = () => {
-  router.push({ name: 'transaction/edit/id' });
+  router.back();
 };
 
-/**
- * 카테고리 선택
- */
 const selectCategory = (id) => {
   router.push({
     name: 'transaction/edit/id',
@@ -90,28 +97,59 @@ const selectCategory = (id) => {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
+/* 리스트 */
 .category-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
+/* 카드 */
 .category-item {
   width: 100%;
   border: 1px solid #e9ecef;
   background: white;
   padding: 12px;
   border-radius: 12px;
-  transition: 0.2s;
+  transition: all 0.2s ease;
   text-align: left;
+  cursor: pointer;
 }
 
 .category-item:hover {
   background: #f8f9fa;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
-button {
-  cursor: pointer;
+/* 아이콘 */
+.icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 20px;
+  color: #fff;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+/* 아이콘 hover */
+.category-item:hover .icon-circle {
+  transform: scale(1.1);
+}
+
+/* 클릭 느낌 */
+.category-item:active .icon-circle {
+  transform: scale(0.95);
+}
+
+/* 아이콘 가독성 */
+.icon-circle i {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
 }
 </style>

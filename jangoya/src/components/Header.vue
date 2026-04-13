@@ -72,7 +72,7 @@ const navClass = computed(() =>
     : 'collapse navbar-collapse',
 );
 
-const changedIsNavShow = () => {
+const toggleNav = () => {
   state.isNavShow = !state.isNavShow;
 };
 

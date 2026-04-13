@@ -88,6 +88,9 @@ import { reactive, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useBudgetStore } from '@/stores/dateStore';
 import { storeToRefs } from 'pinia';
+import { useCategoryStore } from '@/stores/categoryStore';
+const categoryStore = useCategoryStore();
+const { categoryList } = storeToRefs(categoryStore);
 
 const budgetStore = useBudgetStore();
 const { budgets, categories } = storeToRefs(budgetStore);
@@ -111,11 +114,22 @@ watch(
 );
 
 const budgetItem = reactive({ ...matchedBudgetsItem.value });
-
-const categoryItem = computed(() => {
-  return categories.value.find((x) => x.id === budgetItem.categoryId);
+const categoryId = computed(() => {
+  if (currentRoute.query.categoryId !== undefined) {
+    return String(currentRoute.query.categoryId);
+  }
+  return String(budgetItem.categoryId);
 });
-
+const categoryItem = computed(() => {
+  return categoryList.value.find(
+    (x) => String(x.id) === String(categoryId.value),
+  );
+});
+watch(categoryId, (val) => {
+  if (val) {
+    budgetItem.categoryId = val;
+  }
+});
 const editType = budgetItem.type === 'income' ? '수입' : '지출';
 
 const updateBudgetHandler = () => {
