@@ -39,11 +39,11 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import { useFilterStore } from '@/stores/filterStore'; // ✨ 피니아 추가
+import { useFilterStore } from '@/stores/filterStore'; 
 import { useCategoryStore } from '@/stores/categoryStore';
 
 const router = useRouter();
-const filterStore = useFilterStore(); // ✨ 스토어 활성화
+const filterStore = useFilterStore(); 
 const categoryStore = useCategoryStore();
 
 onMounted(async () => {
@@ -63,15 +63,14 @@ const sortedCategories = computed(() => {
 });
 
 const applyAndGoBack = () => {
-  // 정렬된 순서대로 ID 뽑기 로직 유지
+  // 정렬된 순서대로 ID 뽑기
   const finalSortedIds = sortedCategories.value
     .filter((cat) => filterStore.tempSelectedIds.includes(cat.id))
     .map((cat) => cat.id);
 
-  // 피니아의 최종 저장소에 저장!
+  // 피니아에 저장
   filterStore.confirmFilter(finalSortedIds);
 
-  // 부모 페이지(테스트 페이지)로 돌아가기
   router.push({ name: 'testFilter' });
 };
 

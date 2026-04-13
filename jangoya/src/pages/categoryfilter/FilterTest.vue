@@ -1,14 +1,7 @@
 <template>
   <div class="p-3">
-    <h2>🧪 필터 테스트 샌드박스 (Pinia 버전)</h2>
+    <h2>수입/지출 내역</h2>
     <hr />
-
-    <div style="background-color: #f0f0f0; padding: 15px; border-radius: 8px">
-      <h4>✅ 현재 피니아에 저장된 결과:</h4>
-      <p>
-        배열 형태: <strong>{{ filterStore.appliedIds }}</strong>
-      </p>
-    </div>
 
     <div style="margin-top: 20px">
       <button @click="goToFilterPage">필터 설정 페이지로 이동하기</button>
@@ -46,7 +39,7 @@ const router = useRouter();
 const filterStore = useFilterStore();
 const budgetStore = useBudgetStore();
 
-// 💡 중요: 페이지가 열릴 때 일단 가계부 전체 내역을 서버에서 가져옵니다!
+//페이지가 열릴 때 일단 가계부 전체 내역 가져오기
 onMounted(() => {
   budgetStore.fetchBudget();
 });
@@ -65,6 +58,6 @@ const categoryFilterBudgets = computed(() => {
 });
 
 const goToFilterPage = () => {
-  router.push({ name: 'category/filter' });
+  router.go(-2);
 };
 </script>

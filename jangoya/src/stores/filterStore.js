@@ -8,7 +8,6 @@ export const useFilterStore = defineStore('filter', () => {
   // '적용'을 눌러서 확정된 최종 ID들 (리스트 페이지에서 쓸 것)
   const appliedIds = ref([]);
 
-  // 토글 함수 (이 로직을 스토어에 넣어두면 어디서든 쓰기 편합니다)
   const toggleSelect = (id) => {
     if (tempSelectedIds.value.includes(id)) {
       tempSelectedIds.value = tempSelectedIds.value.filter(

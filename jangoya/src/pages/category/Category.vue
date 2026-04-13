@@ -77,7 +77,6 @@
 </template>
 
 <script setup>
-// ✨ ref, axios, useUserStore 전부 지웠습니다! 컴포넌트가 엄청 가벼워졌죠.
 import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCategoryStore } from '@/stores/categoryStore';
@@ -95,12 +94,12 @@ const goToAdd = (type) => {
   router.push({ name: 'mypage/category/add' });
 };
 
-// 💡 스토어에 "목록 다 가져와!" 명령만 내리면 끝입니다.
+// 스토어에 카테고리 목록 가져오기
 onMounted(async () => {
   await categoryStore.fetchCategoryList();
 });
 
-// 💡 화면에 뿌릴 때는 스토어의 categoryList를 가져와서 나눕니다.
+// categoryList를 가져와서 나누기
 const incomeCategories = computed(() =>
   categoryStore.categoryList.filter((c) => c.type === 'income'),
 );
