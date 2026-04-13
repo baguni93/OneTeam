@@ -4,6 +4,7 @@
     <h1 class="app-title">잔고야</h1>
     <p class="app-sub">잔고야, 괜찮아?</p>
 
+    <!--예산 유무 분기 처리-->
     <div
       v-if="!budget"
       class="card"
@@ -18,6 +19,7 @@
     </div>
 
     <div v-else>
+      <!--프로그레스 바 동적 바인딩-->
       <div class="budget-card">
         <p class="budget-label">이번 달 예산</p>
         <p class="budget-amount">
@@ -152,6 +154,7 @@ onMounted(async () => {
   fetchBudget();
 });
 
+// 카테고리 예산 합계
 const totalCategoryBudget = computed(() => {
   if (!budget.value) return 0;
   return budget.value.category_budgets.reduce(
@@ -159,6 +162,7 @@ const totalCategoryBudget = computed(() => {
     0,
   );
 });
+// 남은 예산
 const remainingBudget = computed(() => {
   if (!budget.value) return 0;
   return budget.value.total_budget - totalCategoryBudget.value;

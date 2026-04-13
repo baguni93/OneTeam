@@ -3,7 +3,8 @@
       <div class="pig-icon">🐷</div>
       <h1 class="app-title">예산 삭제</h1>
       <p class="app-sub">정말 삭제할까요?</p>
-  
+      
+      <!--삭제 확인 화면-->
       <div class="card" style="text-align: center;">
         <p style="color: #888; margin-bottom: 16px;">정말로 삭제하시겠어요? 😢</p>
         <div class="budget-card" v-if="budget">
@@ -30,13 +31,15 @@ const router = useRouter();
 const budgetPlanStore = useBudgetPlanStore();
 const budget = ref(null);
 
+// 삭제 처리
 const handleDelete = async() => {
     console.log('삭제할 id:', budget.value.id);
     await budgetPlanStore.deleteBudget(budget.value.id);
     alert('삭제가 완료되었습니다');
-    router.push('/budget/new');
+    router.push('/budget/new'); //삭제 후 초기 설정 페이지로 이동
 };
 
+// onMounted에서 현재 예산 데이터 조회
 onMounted(async()=> {
     await budgetPlanStore.fetchBudgetPlan({ userId: currentUser.id, month: new Date().toISOString().slice(0,7)});
     budget.value = budgetPlanStore.budget;

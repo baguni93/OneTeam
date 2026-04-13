@@ -55,7 +55,9 @@ const form = reactive({
 
 const categoryBudgets = reactive({});
 
+// 수정 완료 처리
 const handleUpdate = async() => {
+    // 카테고리 합계 > 총 예산 체크 
     const totalCategory = Object.values(categoryBudgets).reduce((sum,amount)=> sum + Number(amount), 0);
     if(totalCategory > Number(form.total_budget)) {
         alert('카테고리 예산 합계가 총 예산을 초과할 수 없어요! 😅');
@@ -79,6 +81,7 @@ const preventMinus = (e) => {
     }
 };
 
+// onMounted에서 기존 데이터 자동 세팅
 onMounted(async()=> {
     await categoryStore.fetchCategoryList();
     await budgetPlanStore.fetchBudgetPlan({ userId: currentUser.id, month: new Date().toISOString().slice(0,7)});
@@ -88,8 +91,9 @@ onMounted(async()=> {
         router.push('/budget');
         return;
     }
-
+    // 기존 총 예산 세팅
     form.total_budget = budget.total_budget;
+    // 기존 카테고리별 예산 세팅
     budget.category_budgets?.forEach(item => {
         categoryBudgets[item.categoryId] = item.amount;
     });

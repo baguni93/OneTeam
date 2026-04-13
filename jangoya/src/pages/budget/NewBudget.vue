@@ -5,7 +5,6 @@
       <p class="app-sub">이번 달 예산을 설정해볼까요?</p>
   
       <div class="card">
-        <p class="field-label">총 예산</p>
         <input 
           type="number" min="0"
           @keydown="preventMinus"
@@ -14,6 +13,7 @@
           style="width: 100%; border: none; border-bottom: 1.5px solid #534AB7; padding: 10px 0; font-size: 16px; outline: none; box-sizing: border-box; margin-bottom: 16px;" />
   
         <p class="field-label">카테고리별 예산</p>
+        <!--카테고리 목록 동적 렌더링-->
         <div class="cat-row" v-for="cat in categoryStore.categoryList" :key="cat.id">
           <div class="cat-left">
             <div class="cat-dot" :style="{ background: cat.color }"></div>
@@ -53,28 +53,33 @@ const form = reactive({
 });
 
 const categoryBudgets = reactive({});
-
+    // 1.총 예산 미입력 체크 
 const handleSubmit = async() => {
     if(!form.month || !form.total_budget) {
         alert('월과 총 예산을 입력해주세요:)');
         return;
     }
+    // 2. 카테고리 최소 1개 입력 체크
     const hasCategory = Object.values(categoryBudgets).some(amount => amount >0);
     if(!hasCategory) {
         alert('카테고리별 예산에 숫자를 입력해주세요!');
         return;
     }
+    // 3. 카테고리 합계 > 총 예산 체크 
     const totalCategory = Object.values(categoryBudgets).reduce((sum,amount)=> sum + Number(amount), 0);
     if(totalCategory > Number (form.total_budget)) {
         alert('카테고리 예산 합계가 총 예산을 초과할 수 없어요!😅');
         return;
     }
+    // 4. 이미 예산이 있는 경우 중복 방지
     await budgetPlanStore.fetchBudgetPlan({userId: '1', month: form.month});
     if(budgetPlanStore.budget) {
         alert('이미 예산이 설정되어 있어요:(');
         router.push('/budget');
         return;
     }
+
+    // 카테고리 예산 배열 변환
     const category_budgets = Object.entries(categoryBudgets)
 .filter(([_, amount])=> amount > 0)
 .map(([categoryId, amount])=> ({categoryId, amount: Number(amount)}));
@@ -87,6 +92,7 @@ await budgetPlanStore.addBudget({
 router.push('/budget');
 };
 
+// 음수 입력 방지
 const preventMinus = (e) => {
     if (e.key === '-' || e.key === 'e') {
         e.preventDefault();
