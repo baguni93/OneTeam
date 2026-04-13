@@ -172,8 +172,10 @@ const updateUser = async () => {
 
     if (newName.value) {
       currentUser.value.name = newName.value;
-      // ✅ sessionStorage로 변경
-      sessionStorage.setItem('user', JSON.stringify(currentUser.value));
+      localStorage.setItem(
+        'user',
+        btoa(unescape(encodeURIComponent(JSON.stringify(currentUser.value)))),
+      );
       userStore.user.name = newName.value;
     }
 
