@@ -14,7 +14,7 @@
       <div class="text-box">
         <!-- 메모 -->
         <div class="memo">
-          {{ budgetItem.memo || '메모 없음' }}
+          {{ budgetItem?.memo || '메모 없음' }}
         </div>
 
         <!-- 서브 정보 -->

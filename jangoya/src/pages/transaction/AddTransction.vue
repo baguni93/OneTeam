@@ -42,6 +42,7 @@
                     path: '/transaction/select/category',
                     state: {
                       amount: budgetItem.amount,
+                      memo: budgetItem.memo,
                       categoryType: 'income',
                     },
                   })
@@ -57,6 +58,7 @@
                     path: '/transaction/select/category',
                     state: {
                       amount: budgetItem.amount,
+                      memo: budgetItem.memo,
                       categoryType: 'expense',
                     },
                   })
@@ -86,7 +88,7 @@ const dateStore = useDateStore();
 const router = useRouter();
 
 const budgetItem = reactive({
-  date: new Date().toDateString(),
+  date: dateStore.selectedDate,
   categoryId: '',
   amount: 0,
   memo: '',

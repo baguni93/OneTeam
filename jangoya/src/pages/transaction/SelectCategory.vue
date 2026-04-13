@@ -83,6 +83,7 @@ const router = useRouter();
 // 전달값
 const amount = history.state?.amount;
 const type = history.state?.categoryType;
+const memo = history.state?.memo;
 
 const categoryItems = computed(() => {
   return categoryList.value.filter((x) => x.type === type);
@@ -97,7 +98,7 @@ const addBudgetHandler = (categoryItemId) => {
     type: type,
     categoryId: categoryItemId,
     amount: amount,
-    memo: '',
+    memo: memo,
   };
 
   addBudget({ ...budgetItem }, () => {
