@@ -88,7 +88,6 @@ const dateStore = useDateStore();
 const router = useRouter();
 
 const budgetItem = reactive({
-  date: dateStore.selectedDate,
   categoryId: '',
   amount: 0,
   memo: '',
