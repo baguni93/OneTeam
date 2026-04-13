@@ -112,12 +112,16 @@ const fetchBudget = async () => {
 };
 
 const getCategoryName = (categoryId) => {
-  const cat = categoryStore.categoryList.find((c) => c.id === categoryId);
+  const cat = categoryStore.categoryList.find(
+    (c) => String(c.id) === String(categoryId),
+  );
   return cat ? cat.name : '알 수 없는 카테고리';
 };
 
 const getCategoryColor = (categoryId) => {
-  const cat = categoryStore.categoryList.find((c) => c.id === categoryId);
+  const cat = categoryStore.categoryList.find(
+    (c) => String(c.id) === String(categoryId),
+  );
   return cat ? cat.color : '#888';
 };
 const getCategoryUsed = (categoryId) => {
